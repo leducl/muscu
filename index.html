@@ -3,100 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gym & Run Ultimate</title>
+    <title>Gym & Run Ultimate V3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 100px; -webkit-tap-highlight-color: transparent; }
-        .card { background-color: #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); position: relative; border: 1px solid #334155; }
-        .input-dark { background-color: #0f172a; border: 1px solid #334155; color: white; padding: 0.6rem; border-radius: 8px; width: 100%; transition: 0.2s; font-size: 16px; font-weight: bold; }
+        /* BASE & THEME */
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
+        
+        /* COMPONENTS */
+        .card { background-color: #1e293b; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); border: 1px solid #334155; }
+        .input-dark { background-color: #0f172a; border: 1px solid #334155; color: white; padding: 0.8rem; border-radius: 12px; width: 100%; transition: 0.2s; font-size: 16px; font-weight: 600; }
         .input-dark:focus { border-color: #3b82f6; outline: none; background-color: #172033; }
         
-        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 0.8rem; border-radius: 10px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; transition: transform 0.1s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem; border-radius: 14px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: transform 0.1s; }
         .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary { background-color: #334155; color: white; padding: 0.8rem; border-radius: 12px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; transition: background 0.2s; }
+        .btn-secondary:active { background-color: #475569; }
         
-        .btn-secondary { background-color: #334155; color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; transition: 0.2s; }
-        
-        .timer-btn { background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 600; }
+        .timer-btn { background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; }
         .timer-btn.active { background-color: #ea580c; border-color: #ea580c; color: white; animation: pulse 1.5s infinite; }
         
-        .calc-btn { position: absolute; right: 10px; top: 32px; color: #94a3b8; padding: 4px; cursor: pointer; z-index: 10; }
-        .calc-btn:hover { color: #3b82f6; }
+        .calc-btn { position: absolute; right: 12px; top: 40px; color: #94a3b8; padding: 4px; cursor: pointer; z-index: 10; }
+        
+        .clickable-history { cursor: pointer; border-radius: 6px; padding: 4px 8px; margin-right: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; border: 1px solid transparent; font-weight: 600; }
+        .clickable-history.last { background-color: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+        .clickable-history.best { background-color: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.3); }
+        .clickable-history.onerm { background-color: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
 
-        .clickable-history { cursor: pointer; border-radius: 4px; padding: 2px 6px; margin-right: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; border: 1px solid transparent; }
-        .clickable-history.last { background-color: rgba(59, 130, 246, 0.1); color: #93c5fd; border-color: rgba(59, 130, 246, 0.2); }
-        .clickable-history.best { background-color: rgba(234, 179, 8, 0.1); color: #fde047; border-color: rgba(234, 179, 8, 0.2); }
+        /* NAVBAR */
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(30, 41, 59, 0.95); border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 12px 0 24px 0; z-index: 50; backdrop-filter: blur(12px); }
+        .nav-item { color: #64748b; text-align: center; flex: 1; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item i { width: 24px; height: 24px; transition: 0.2s; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+        .nav-item.active { color: #3b82f6; }
+        .nav-item.active i { transform: translateY(-2px); color: #60a5fa; }
 
-        /* MODAL CALCULATOR */
-        #calc-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .plate { display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin: 2px; color: #1e293b; border: 2px solid rgba(255,255,255,0.2); }
-        .plate-20 { background-color: #2563eb; color: white; height: 50px; width: 50px; line-height: 46px; } /* Bleu */
-        .plate-15 { background-color: #eab308; } /* Jaune */
-        .plate-10 { background-color: #16a34a; color: white; } /* Vert */
-        .plate-5 { background-color: #ef4444; color: white; height: 35px; width: 35px; line-height: 32px;} /* Rouge */
-        .plate-2-5 { background-color: #1e293b; color: white; border-color: white; height: 30px; width: 30px; line-height: 26px; } /* Noir */
-        .plate-1-25 { background-color: #cbd5e1; height: 25px; width: 25px; line-height: 22px; font-size: 9px; } /* Gris */
+        /* PAGES LOGIC */
+        .page-view { display: none; opacity: 0; animation: fadeIn 0.2s forwards; }
+        .page-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* TOAST */
-        #toast { visibility: hidden; min-width: 250px; background-color: #10b981; color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 50; left: 50%; bottom: 30px; transform: translateX(-50%); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); opacity: 0; transition: all 0.3s; font-weight: bold; font-size: 0.9rem; }
-        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-        #toast.error { background-color: #ef4444; }
+        /* MODAL & TOAST */
+        #calc-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .plate { display: inline-block; width: 45px; height: 45px; line-height: 41px; text-align: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin: 3px; color: #1e293b; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .plate-20 { background-color: #2563eb; color: white; width: 55px; height: 55px; line-height: 51px; } 
+        .plate-15 { background-color: #eab308; } .plate-10 { background-color: #16a34a; color: white; } 
+        .plate-5 { background-color: #ef4444; color: white; width: 38px; height: 38px; line-height: 34px;} 
+        .plate-2-5 { background-color: #1e293b; color: white; border-color: white; width: 32px; height: 32px; line-height: 28px; } 
+        .plate-1-25 { background-color: #cbd5e1; width: 28px; height: 28px; line-height: 24px; font-size: 9px; }
 
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(234, 88, 12, 0); } 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); } }
+        #toast { visibility: hidden; min-width: 250px; background-color: #10b981; color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 60; left: 50%; bottom: 100px; transform: translateX(-50%); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); opacity: 0; transition: all 0.3s; font-weight: bold; }
+        #toast.show { visibility: visible; opacity: 1; bottom: 110px; }
+        
+        /* GRAPHIQUE SVG */
+        .chart-container { height: 150px; width: 100%; display: flex; align-items: flex-end; gap: 8px; padding-top: 20px; }
+        .chart-bar { flex: 1; background: linear-gradient(to top, #3b82f6, #60a5fa); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: height 0.5s ease; }
+        .chart-bar span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #94a3b8; width: 100%; text-align: center; }
+        .chart-line-container { width: 100%; height: 150px; position: relative; }
+        
         select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem auto; padding-right: 2.5rem; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(234, 88, 12, 0); } 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); } }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto">
 
-    <header class="flex justify-between items-center mb-6">
+    <header class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Gym & Run</h1>
-            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Ultimate Edition</p>
+            <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300" id="header-title">Gym & Run</h1>
+            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase" id="header-subtitle">Ultimate V3</p>
         </div>
-        <button onclick="toggleHistory()" class="text-slate-300 hover:text-white p-3 rounded-full bg-slate-800 border border-slate-700">
-            <i data-lucide="history" class="w-5 h-5"></i>
-        </button>
+        <div class="bg-slate-800 p-2 rounded-full border border-slate-700 shadow-lg">
+            <i data-lucide="activity" class="w-5 h-5 text-blue-400"></i>
+        </div>
     </header>
 
-    <div class="mb-6">
-        <div class="relative">
-            <select id="day-selector" onchange="manualDayChange(this.value)" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl p-3.5 font-bold focus:outline-none focus:border-blue-500 shadow-lg">
-                </select>
+    <div id="view-tracker" class="page-view active">
+        <div class="mb-6">
+            <div class="relative">
+                <select id="day-selector" onchange="manualDayChange(this.value)" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl p-3.5 font-bold focus:outline-none focus:border-blue-500 shadow-lg appearance-none">
+                    </select>
+            </div>
+        </div>
+        <div id="app-content"></div>
+    </div>
+
+    <div id="view-history" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-blue-400"></i> Historique des Séances</h2>
+        <div id="history-list" class="space-y-3 pb-4"></div>
+    </div>
+
+    <div id="view-stats" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-5 h-5 text-blue-400"></i> Performance Hebdo</h2>
+        
+        <div class="grid grid-cols-2 gap-3 mb-6" id="weekly-stats"></div>
+
+        <div class="card bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
+            <h3 class="text-xs text-slate-400 uppercase font-bold mb-1">Volume Musculation (kg totaux)</h3>
+            <div id="volume-chart" class="chart-container">
+                </div>
+            <div class="flex justify-between text-[10px] text-slate-500 mt-2 px-1">
+                <span>S-3</span><span>S-2</span><span>S-1</span><span>Ceu.</span>
+            </div>
         </div>
     </div>
 
-    <div id="app-content"></div>
+    <div id="view-weight" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="scale" class="w-5 h-5 text-blue-400"></i> Suivi de Poids</h2>
+        
+        <div class="card bg-slate-800 border-slate-700">
+            <div class="flex gap-3 items-end">
+                <div class="flex-1">
+                    <label class="text-xs text-slate-400 uppercase font-bold mb-1 block">Poids du jour (kg)</label>
+                    <input type="number" id="weight-input" step="0.1" class="input-dark text-center text-2xl" placeholder="00.0">
+                </div>
+                <button onclick="saveBodyWeight()" class="btn-primary w-auto px-6 h-[50px] flex items-center justify-center">
+                    <i data-lucide="plus" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
 
-    <div id="history-view" class="hidden">
-        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-white"><i data-lucide="bar-chart-2" class="text-blue-400"></i> Dashboard</h2>
+        <div class="card p-0 overflow-hidden bg-slate-900/50">
+            <div class="p-4 border-b border-slate-800">
+                <h3 class="text-xs text-slate-400 uppercase font-bold">Évolution</h3>
+            </div>
+            <div class="relative h-40 w-full p-2" id="weight-chart-container">
+                </div>
+        </div>
+
+        <div class="space-y-2" id="weight-history-list"></div>
+    </div>
+
+    <div id="view-settings" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4">Paramètres</h2>
         
-        <div id="weekly-stats" class="grid grid-cols-2 gap-3 mb-6"></div> <div id="history-list" class="space-y-3 mb-8"></div>
-        
-        <div class="border-t border-slate-700 pt-6">
-            <h3 class="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">Sauvegarde</h3>
-            <div class="grid grid-cols-2 gap-3 mb-3">
-                <button onclick="exportData()" class="btn-secondary text-xs bg-blue-900/30 border border-blue-800/50 text-blue-200">
-                    <i data-lucide="download" class="w-3 h-3"></i> Exporter
-                </button>
-                <button onclick="document.getElementById('import-file').click()" class="btn-secondary text-xs bg-slate-700 border border-slate-600">
-                    <i data-lucide="upload" class="w-3 h-3"></i> Importer
-                </button>
+        <div class="space-y-4">
+            <div class="card">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-blue-400"></i> Sauvegarde des Données</h3>
+                <p class="text-xs text-slate-400 mb-4">Exporte tes données pour ne jamais perdre ta progression.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="exportData()" class="btn-secondary text-sm"><i data-lucide="download" class="w-4 h-4"></i> Sauvegarder</button>
+                    <button onclick="document.getElementById('import-file').click()" class="btn-secondary text-sm"><i data-lucide="upload" class="w-4 h-4"></i> Restaurer</button>
+                </div>
                 <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(this)">
             </div>
-            
-            <button onclick="toggleHistory()" class="mt-4 btn-secondary w-full py-3">Retour au programme</button>
-            <button onclick="clearData()" class="mt-6 text-red-400 text-xs w-full text-center hover:text-red-300">Réinitialiser l'application</button>
+
+            <div class="card border-red-900/30 bg-red-900/10">
+                <h3 class="font-bold text-red-100 mb-2 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-red-400"></i> Zone Danger</h3>
+                <button onclick="clearData()" class="w-full py-3 text-red-400 text-sm font-bold border border-red-900/50 rounded-lg hover:bg-red-900/20 transition-colors">
+                    Tout effacer (Reset Usine)
+                </button>
+            </div>
         </div>
     </div>
+
+    <nav class="navbar">
+        <div class="nav-item active" onclick="switchTab('tracker', this)">
+            <i data-lucide="dumbbell"></i>
+            <span>Séance</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('history', this)">
+            <i data-lucide="calendar-days"></i>
+            <span>Journal</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('stats', this)">
+            <i data-lucide="bar-chart-2"></i>
+            <span>Stats</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('weight', this)">
+            <i data-lucide="user"></i>
+            <span>Profil</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('settings', this)">
+            <i data-lucide="settings"></i>
+            <span>Outils</span>
+        </div>
+    </nav>
 
     <div id="calc-modal" onclick="closeCalc()">
         <div class="bg-slate-900 p-6 rounded-2xl w-80 text-center border border-slate-700 shadow-2xl transform scale-100" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-bold text-white mb-2">Chargement Barre</h3>
+            <h3 class="text-xl font-bold text-white mb-2">Charger la Barre</h3>
             <p class="text-slate-400 text-sm mb-4">Objectif : <span id="calc-target" class="text-blue-400 font-bold text-lg">0</span> kg</p>
-            
-            <div id="calc-result" class="bg-slate-800 p-4 rounded-xl mb-4 min-h-[80px] flex flex-wrap justify-center items-center gap-1">
-                </div>
-            
+            <div id="calc-result" class="bg-slate-800 p-4 rounded-xl mb-4 min-h-[80px] flex flex-wrap justify-center items-center gap-1"></div>
             <div class="text-xs text-slate-500 mb-4">Barre olympique standard (20kg)</div>
             <button onclick="closeCalc()" class="btn-primary">Fermer</button>
         </div>
@@ -157,28 +244,43 @@
     lucide.createIcons();
     loadDailyView(currentDayIndex);
 
+    // --- 3. NAVIGATION (TABS) ---
+    function switchTab(tabId, element) {
+        document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+        document.getElementById('view-' + tabId).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        // Logic de chargement spécifique
+        if(tabId === 'history') renderHistory();
+        if(tabId === 'stats') { renderWeeklyStats(); renderVolumeChart(); }
+        if(tabId === 'weight') { renderWeightHistory(); renderWeightChart(); }
+
+        const titles = { 'tracker': 'Gym & Run', 'history': 'Journal', 'stats': 'Statistiques', 'weight': 'Mon Profil', 'settings': 'Outils' };
+        document.getElementById('header-title').innerText = titles[tabId];
+    }
+
     function manualDayChange(val) {
         currentDayIndex = parseInt(val);
         loadDailyView(currentDayIndex);
     }
 
-    // --- 3. RENDU DES VUES ---
+    // --- 4. CORE: TRACKER VIEW ---
     function loadDailyView(dayIndex) {
         const contentDiv = document.getElementById('app-content');
         const dayPlan = program[dayIndex];
 
-        // VUE REPOS
         if (dayPlan.type === 'rest') {
             contentDiv.innerHTML = `
                 <div class="card text-center py-12 border-t-4 border-emerald-500 bg-gradient-to-b from-emerald-900/20 to-slate-900">
                     <div class="bg-emerald-900/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
                         <i data-lucide="coffee" class="w-10 h-10 text-emerald-400"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-white">Jour de Repos</h2>
+                    <h2 class="text-2xl font-bold text-white">Repos</h2>
                     <p class="text-slate-400 mt-2 text-sm">${dayPlan.desc}</p>
                     <div class="mt-8 bg-slate-800/80 p-5 rounded-xl text-left text-sm border border-slate-700">
-                        <p class="text-emerald-400 font-bold mb-2 flex items-center gap-2 text-xs uppercase tracking-wide"><i data-lucide="leaf" class="w-4 h-4"></i> Nutrition Focus</p>
-                        <p class="text-slate-300 leading-relaxed">Réduis les glucides aujourd'hui. Augmente les légumes et les bons lipides pour optimiser la récupération hormonale.</p>
+                        <p class="text-emerald-400 font-bold mb-2 flex items-center gap-2 text-xs uppercase tracking-wide"><i data-lucide="leaf" class="w-4 h-4"></i> Nutrition</p>
+                        <p class="text-slate-300">Moins de glucides, plus de légumes et bons lipides (avocat, noix).</p>
                     </div>
                 </div>`;
             lucide.createIcons();
@@ -186,11 +288,6 @@
         }
 
         const isCardio = dayPlan.type === 'cardio';
-        const label1 = isCardio ? "Distance (km)" : "Charge (kg)";
-        const place1 = isCardio ? "Ex: 8.5" : "Ex: 60";
-        const label2 = isCardio ? "Temps (min)" : "Reps";
-        const place2 = isCardio ? "Ex: 45:30" : "Ex: 10,10,9,8";
-        
         let html = `<form id="workout-form" onsubmit="event.preventDefault();">`;
 
         dayPlan.exercises.forEach((exo, index) => {
@@ -198,41 +295,51 @@
             const lastData = historyData.last;
             const bestData = historyData.best;
             
-            // Ligne Historique (Dernier + Record)
             let historyHTML = '';
             if (!lastData) {
                 historyHTML = `<div class="text-xs text-slate-500 mb-3 italic flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Pas d'historique</div>`;
             } else {
-                const lastText = isCardio ? `${lastData.val1}km en ${lastData.val2}` : `${lastData.val1}kg x ${lastData.val2}`;
+                const lastText = isCardio ? `${lastData.val1}km / ${lastData.val2}` : `${lastData.val1}kg x ${lastData.val2}`;
                 const bestText = bestData ? (isCardio ? `${bestData.val1}km` : `${bestData.val1}kg`) : '-';
+                
+                // Calcul 1RM (Epley Formula) : Poids * (1 + 0.0333 * Reps)
+                let onermHTML = '';
+                if(!isCardio && bestData) {
+                    const w = parseFloat(bestData.val1.replace(',','.'));
+                    const r = parseInt(bestData.val2.split(',')[0]); // Prend la 1ere série
+                    if(!isNaN(w) && !isNaN(r)) {
+                        const onerm = Math.round(w * (1 + 0.0333 * r));
+                        onermHTML = `<div class="clickable-history onerm"><i data-lucide="flame" class="w-3 h-3"></i> 1RM: <strong>${onerm}kg</strong></div>`;
+                    }
+                }
 
                 historyHTML = `
-                    <div class="flex gap-2 mb-3 overflow-x-auto">
-                        <div onclick="fillInputs(${index}, '${lastData.val1}', '${lastData.val2}')" 
-                             class="clickable-history last" title="Copier dernier">
-                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Dernier: <strong>${lastText}</strong>
+                    <div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
+                        <div onclick="fillInputs(${index}, '${lastData.val1}', '${lastData.val2}')" class="clickable-history last" title="Copier dernier">
+                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Last: <strong>${lastText}</strong>
                         </div>
-                        <div class="clickable-history best" title="Votre Record !">
-                            <i data-lucide="trophy" class="w-3 h-3"></i> Record: <strong>${bestText}</strong>
+                        <div class="clickable-history best">
+                            <i data-lucide="trophy" class="w-3 h-3"></i> Best: <strong>${bestText}</strong>
                         </div>
+                        ${onermHTML}
                     </div>`;
             }
 
-            // Bouton Timer ou Info
             let actionBtn = '';
             if (!isCardio && exo.rest !== 'N/A') {
                 const seconds = parseRestToSeconds(exo.rest);
-                actionBtn = `
-                    <button type="button" class="timer-btn" onclick="startTimer(this, ${seconds})">
-                        <i data-lucide="timer" class="w-3 h-3"></i> ${exo.rest}
-                    </button>`;
+                actionBtn = `<button type="button" class="timer-btn" onclick="startTimer(this, ${seconds})"><i data-lucide="timer" class="w-3 h-3"></i> ${exo.rest}</button>`;
             }
 
-            // Calculateur de disques (Seulement pour muscu)
             let calcBtn = '';
             if (!isCardio && !exo.name.includes('Haltères') && !exo.name.includes('Poulie')) {
-                calcBtn = `<i data-lucide="scale" class="w-4 h-4 calc-btn" onclick="openCalc(document.getElementById('val1_${index}').value)" title="Calculer les disques"></i>`;
+                calcBtn = `<i data-lucide="scale" class="w-4 h-4 calc-btn" onclick="openCalc(document.getElementById('val1_${index}').value)"></i>`;
             }
+
+            const label1 = isCardio ? "Distance (km)" : "Charge (kg)";
+            const place1 = isCardio ? "Ex: 8.5" : "Ex: 60";
+            const label2 = isCardio ? "Temps (min)" : "Reps";
+            const place2 = isCardio ? "Ex: 45:30" : "Ex: 10,10,9";
 
             html += `
                 <div class="card relative overflow-hidden">
@@ -267,15 +374,10 @@
 
         html += `
             <div class="card">
-                <label class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2">
-                    <i data-lucide="sticky-note" class="w-3 h-3"></i> Notes de séance
-                </label>
-                <textarea name="notes" class="input-dark text-sm min-h-[60px] font-normal text-slate-300" placeholder="Sensations, douleurs, énergie..."></textarea>
+                <label class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2"><i data-lucide="sticky-note" class="w-3 h-3"></i> Notes</label>
+                <textarea name="notes" class="input-dark text-sm min-h-[60px] font-normal text-slate-300" placeholder="Sensations..."></textarea>
             </div>
-
-            <button type="button" onclick="saveWorkout(${dayIndex})" class="btn-primary mb-8 text-lg shadow-blue-900/20 shadow-xl">
-                <i data-lucide="check-circle-2" class="inline w-5 h-5 mr-2"></i> Valider la séance
-            </button>
+            <button type="button" onclick="saveWorkout(${dayIndex})" class="btn-primary mb-8 text-lg shadow-blue-900/20 shadow-xl">Valider la séance</button>
             </form>
         `;
 
@@ -283,9 +385,148 @@
         lucide.createIcons();
     }
 
-    // --- 4. FEATURES "PRO" (Calculateur, PR, Timer) ---
+    // --- 5. LOGIQUE POIDS & GRAPHIQUE ---
+    function saveBodyWeight() {
+        const input = document.getElementById('weight-input');
+        const weight = parseFloat(input.value);
+        if (!weight || isNaN(weight)) { showToast("Poids invalide", true); return; }
 
-    // A. CALCULATEUR DE DISQUES
+        let weights = JSON.parse(localStorage.getItem('gym_tracker_weights') || '[]');
+        const date = new Date().toLocaleDateString('fr-FR');
+        
+        weights.unshift({ date: date, weight: weight, timestamp: new Date().getTime() });
+        localStorage.setItem('gym_tracker_weights', JSON.stringify(weights));
+        
+        showToast("Poids enregistré !");
+        input.value = '';
+        renderWeightHistory();
+        renderWeightChart();
+    }
+
+    function renderWeightHistory() {
+        const list = document.getElementById('weight-history-list');
+        const weights = JSON.parse(localStorage.getItem('gym_tracker_weights') || '[]');
+        
+        if (weights.length === 0) {
+            list.innerHTML = '<div class="text-slate-500 text-center text-sm py-4">Aucune pesée enregistrée.</div>';
+            return;
+        }
+
+        let html = '';
+        weights.slice(0, 5).forEach((item, index) => { // Affiche les 5 derniers
+            html += `
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700/50">
+                    <span class="text-slate-400 text-sm">${item.date}</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-white font-bold">${item.weight} kg</span>
+                        <button onclick="deleteWeight(${index})" class="text-slate-600 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>`;
+        });
+        list.innerHTML = html;
+        lucide.createIcons();
+    }
+
+    function deleteWeight(index) {
+        if(confirm("Supprimer cette pesée ?")) {
+            let weights = JSON.parse(localStorage.getItem('gym_tracker_weights') || '[]');
+            weights.splice(index, 1);
+            localStorage.setItem('gym_tracker_weights', JSON.stringify(weights));
+            renderWeightHistory(); renderWeightChart();
+        }
+    }
+
+    function renderWeightChart() {
+        const container = document.getElementById('weight-chart-container');
+        let weights = JSON.parse(localStorage.getItem('gym_tracker_weights') || '[]');
+        
+        if (weights.length < 2) {
+            container.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-slate-500">Il faut au moins 2 pesées pour le graphique.</div>';
+            return;
+        }
+
+        // Trier par date (le plus ancien en premier pour le graphe)
+        let chartData = [...weights].sort((a, b) => a.timestamp - b.timestamp).slice(-10); // Max 10 points
+
+        const minW = Math.min(...chartData.map(d => d.weight)) - 1;
+        const maxW = Math.max(...chartData.map(d => d.weight)) + 1;
+        const range = maxW - minW;
+        
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        // Génération SVG Polyline
+        let points = "";
+        chartData.forEach((d, i) => {
+            const x = (i / (chartData.length - 1)) * width;
+            const y = height - ((d.weight - minW) / range) * height;
+            points += `${x},${y} `;
+        });
+
+        const svg = `
+            <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="overflow: visible;">
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.5" />
+                        <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+                <polyline points="${points}" fill="none" stroke="#3b82f6" stroke-width="3" />
+                ${chartData.map((d, i) => {
+                    const x = (i / (chartData.length - 1)) * width;
+                    const y = height - ((d.weight - minW) / range) * height;
+                    return `<circle cx="${x}" cy="${y}" r="4" fill="#0f172a" stroke="#60a5fa" stroke-width="2" />`;
+                }).join('')}
+            </svg>
+        `;
+        container.innerHTML = svg;
+    }
+
+    // --- 6. STATS (VOLUME CHART) ---
+    function renderVolumeChart() {
+        const container = document.getElementById('volume-chart');
+        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        
+        // Grouper par semaine (4 dernières semaines)
+        const weeks = [0,0,0,0]; // Index 3 = semaine actuelle
+        const now = new Date();
+        // Logique simplifiée pour démo : on regarde les timestamps
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        
+        history.forEach(session => {
+            if(session.type !== 'muscu') return;
+            const diff = now.getTime() - session.timestamp;
+            const weekIndex = 3 - Math.floor(diff / oneWeek);
+            
+            if(weekIndex >= 0 && weekIndex <= 3) {
+                let sessionVol = 0;
+                session.exercises.forEach(ex => {
+                    const w = parseFloat(ex.val1);
+                    // Somme des reps (ex: "10,10,10" -> 30)
+                    const rStr = ex.val2.split(',').map(s => parseInt(s));
+                    const totalReps = rStr.reduce((a,b) => a + (isNaN(b)?0:b), 0);
+                    if(!isNaN(w)) sessionVol += w * totalReps;
+                });
+                weeks[weekIndex] += sessionVol;
+            }
+        });
+
+        const maxVol = Math.max(...weeks, 1); // Eviter division par 0
+        
+        let html = '';
+        weeks.forEach((vol, i) => {
+            const heightPct = Math.round((vol / maxVol) * 100);
+            const color = i === 3 ? 'bg-blue-500' : 'bg-slate-700'; // Semaine courante en bleu
+            html += `
+                <div class="chart-bar ${color}" style="height: ${heightPct}%">
+                    <span class="text-[9px]">${(vol/1000).toFixed(1)}k</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // --- 7. UTILITIES (CALC, TIMER, TOAST) ---
     function openCalc(weightVal) {
         if(!weightVal) { showToast("Entre un poids d'abord !", true); return; }
         const weight = parseFloat(weightVal.replace(',','.'));
@@ -296,7 +537,6 @@
         targetDisplay.innerText = weight;
         modal.style.display = 'flex';
 
-        // Logique de calcul (Barre 20kg)
         let remainder = (weight - 20) / 2;
         resultDisplay.innerHTML = '';
 
@@ -307,60 +547,34 @@
 
         const plates = [20, 15, 10, 5, 2.5, 1.25];
         let html = '<div class="text-slate-300 text-xs w-full text-center mb-2">Par côté :</div>';
-
         plates.forEach(p => {
             while (remainder >= p) {
-                // Remplacement des points par des tirets pour les classes CSS (ex: plate-2-5)
                 const className = `plate-${p.toString().replace('.','-')}`;
                 html += `<div class="plate ${className}">${p}</div>`;
                 remainder -= p;
-                // Correction d'arrondi JS
                 remainder = Math.round(remainder * 100) / 100;
             }
         });
-
-        if (remainder > 0) {
-            html += `<div class="text-red-400 text-xs w-full mt-2">Reste: ${remainder}kg (Impossible)</div>`;
-        }
+        if (remainder > 0) html += `<div class="text-red-400 text-xs w-full mt-2">Reste: ${remainder}kg</div>`;
         resultDisplay.innerHTML = html;
     }
 
-    function closeCalc() {
-        document.getElementById('calc-modal').style.display = 'none';
-    }
+    function closeCalc() { document.getElementById('calc-modal').style.display = 'none'; }
 
-    // B. LOGIQUE HISTORIQUE AVANCEE (PR)
     function getHistoryData(exoName) {
         const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        let last = null;
-        let best = null;
-
-        // Trouver le dernier
+        let last = null, best = null;
         for (let session of history) {
             const found = session.exercises.find(e => e.name === exoName || e.name.includes(exoName));
             if (found) {
-                last = found;
-                break; // On a trouvé le plus récent
+                if(!last) last = found;
+                const val = parseFloat(found.val1.replace(',','.'));
+                if (!isNaN(val) && (!best || val > parseFloat(best.val1.replace(',','.')))) best = found;
             }
         }
-
-        // Trouver le meilleur (Max Poids)
-        let maxVal = 0;
-        history.forEach(session => {
-            const found = session.exercises.find(e => e.name === exoName || e.name.includes(exoName));
-            if (found) {
-                const val = parseFloat(found.val1.replace(',','.'));
-                if (!isNaN(val) && val > maxVal) {
-                    maxVal = val;
-                    best = found;
-                }
-            }
-        });
-
         return { last, best };
     }
 
-    // C. TIMER & UTILS
     function showToast(message, isError = false) {
         const toast = document.getElementById("toast");
         const msg = document.getElementById("toast-msg");
@@ -373,7 +587,7 @@
     function fillInputs(index, val1, val2) {
         document.getElementById(`val1_${index}`).value = val1;
         document.getElementById(`val2_${index}`).value = val2;
-        showToast("Données recopiées !");
+        showToast("Recopié !");
     }
 
     let activeTimerInterval = null;
@@ -398,16 +612,13 @@
             b.innerHTML = '<i data-lucide="timer" class="w-3 h-3"></i> ' + b.innerText.split(' ').pop();
             lucide.createIcons();
         });
-
         let timeLeft = duration;
         btn.classList.add('active');
-        
         const updateTimer = () => {
             const min = Math.floor(timeLeft / 60);
             const sec = timeLeft % 60;
             btn.innerHTML = `<i data-lucide="hourglass" class="w-3 h-3"></i> ${min}:${sec < 10 ? '0'+sec : sec}`;
             lucide.createIcons();
-
             if (timeLeft <= 0) {
                 clearInterval(activeTimerInterval);
                 btn.classList.remove('active');
@@ -422,7 +633,7 @@
         activeTimerInterval = setInterval(updateTimer, 1000);
     }
 
-    // --- 5. SAUVEGARDE & SYSTEME ---
+    // --- 8. SAUVEGARDE & RENDER ---
     function saveWorkout(dayIndex) {
         const form = document.getElementById('workout-form');
         const dayPlan = program[dayIndex];
@@ -463,21 +674,6 @@
         loadDailyView(dayIndex);
     }
 
-    function toggleHistory() {
-        const content = document.getElementById('app-content');
-        const historyView = document.getElementById('history-view');
-        
-        if (historyView.classList.contains('hidden')) {
-            content.classList.add('hidden');
-            historyView.classList.remove('hidden');
-            renderHistory();
-            renderWeeklyStats();
-        } else {
-            content.classList.remove('hidden');
-            historyView.classList.add('hidden');
-        }
-    }
-
     function renderWeeklyStats() {
         const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
         const statsDiv = document.getElementById('weekly-stats');
@@ -504,13 +700,13 @@
         });
 
         statsDiv.innerHTML = `
-            <div class="bg-slate-700/50 p-3 rounded-xl border border-slate-600 text-center">
-                <div class="text-xs text-slate-400 uppercase font-bold mb-1">Muscu (Hebdo)</div>
-                <div class="text-2xl font-black text-white">${gymCount} <span class="text-sm text-slate-500 font-normal">séances</span></div>
+            <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600 text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Muscu (Hebdo)</div>
+                <div class="text-3xl font-black text-white">${gymCount}</div>
             </div>
-            <div class="bg-slate-700/50 p-3 rounded-xl border border-slate-600 text-center">
-                <div class="text-xs text-slate-400 uppercase font-bold mb-1">Running (Hebdo)</div>
-                <div class="text-2xl font-black text-amber-400">${runKm.toFixed(1)} <span class="text-sm text-slate-500 font-normal">km</span></div>
+            <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600 text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Running (Hebdo)</div>
+                <div class="text-3xl font-black text-amber-400">${runKm.toFixed(1)} <span class="text-sm">km</span></div>
             </div>`;
     }
 
@@ -558,16 +754,17 @@
             let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
             history.splice(index, 1);
             localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
-            renderHistory();
-            renderWeeklyStats();
+            renderHistory(); renderWeeklyStats(); renderVolumeChart();
             showToast("Séance supprimée", true);
         }
     }
 
     function exportData() {
-        const data = localStorage.getItem('gym_tracker_data_v2');
-        if(!data) { showToast("Rien à exporter", true); return; }
-        const blob = new Blob([data], {type: 'application/json'});
+        const data = {
+            history: JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'),
+            weights: JSON.parse(localStorage.getItem('gym_tracker_weights') || '[]')
+        };
+        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `gym_backup_${new Date().toISOString().slice(0,10)}.json`;
@@ -581,11 +778,15 @@
         reader.onload = e => {
             try {
                 const data = JSON.parse(e.target.result);
+                // Support ancien format (array direct) et nouveau (objet)
                 if(Array.isArray(data)) {
                     localStorage.setItem('gym_tracker_data_v2', JSON.stringify(data));
-                    showToast("Restauration réussie !");
-                    setTimeout(() => location.reload(), 1000);
-                } else showToast("Fichier invalide", true);
+                } else if(data.history) {
+                    localStorage.setItem('gym_tracker_data_v2', JSON.stringify(data.history));
+                    if(data.weights) localStorage.setItem('gym_tracker_weights', JSON.stringify(data.weights));
+                }
+                showToast("Restauration réussie !");
+                setTimeout(() => location.reload(), 1000);
             } catch(err) { showToast("Erreur fichier", true); }
         };
         reader.readAsText(file);
@@ -594,6 +795,7 @@
     function clearData() {
         if(confirm("Tout effacer ?")) {
             localStorage.removeItem('gym_tracker_data_v2');
+            localStorage.removeItem('gym_tracker_weights');
             location.reload();
         }
     }
