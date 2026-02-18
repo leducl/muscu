@@ -3,30 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gym & Run Coach V5</title>
+    <title>Gym & Run Coach V9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* BASE & THEME */
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .p-4 { padding-bottom: 130px; }
-        /* COMPONENTS */
-        .card { background-color: #1e293b; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); border: 1px solid #334155; }
-        .input-dark { background-color: #0f172a; border: 1px solid #334155; color: white; padding: 0.8rem; border-radius: 12px; width: 100%; transition: 0.2s; font-size: 16px; font-weight: 600; }
-        .input-dark:focus { border-color: #3b82f6; outline: none; background-color: #172033; }
+        /* --- VARIABLES DE THEME (Modifiables par JS) --- */
+        :root {
+            --primary: #3b82f6;       /* Blue-500 */
+            --primary-dark: #1d4ed8;  /* Blue-700 */
+            --primary-light: #60a5fa; /* Blue-400 */
+            --bg-card: #1e293b;
+            --text-main: #e2e8f0;
+        }
+
+        /* BASE */
+        body { background-color: #0f172a; color: var(--text-main); font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 130px; -webkit-tap-highlight-color: transparent; }
         
-        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem; border-radius: 14px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: transform 0.1s; }
+        /* COMPONENTS DYNAMIQUES */
+        .card { background-color: var(--bg-card); border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); border: 1px solid #334155; }
+        
+        .input-dark { background-color: #0f172a; border: 1px solid #334155; color: white; padding: 0.8rem; border-radius: 12px; width: 100%; transition: 0.2s; font-size: 16px; font-weight: 600; }
+        .input-dark:focus { border-color: var(--primary); outline: none; background-color: #172033; }
+        
+        .btn-primary { background: var(--primary); color: white; padding: 1rem; border-radius: 14px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0, 0.3); transition: transform 0.1s; }
         .btn-primary:active { transform: scale(0.98); }
+        
         .btn-secondary { background-color: #334155; color: white; padding: 0.8rem; border-radius: 12px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; transition: background 0.2s; }
         .btn-secondary:active { background-color: #475569; }
         
-        .timer-btn { background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; }
+        .timer-btn { background-color: rgba(255,255,255, 0.05); border: 1px solid var(--primary); color: var(--primary-light); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; }
         .timer-btn.active { background-color: #ea580c; border-color: #ea580c; color: white; animation: pulse 1.5s infinite; }
         
         .calc-btn { position: absolute; right: 12px; top: 40px; color: #94a3b8; padding: 4px; cursor: pointer; z-index: 10; }
         
+        /* HISTORIQUE */
         .clickable-history { cursor: pointer; border-radius: 6px; padding: 4px 8px; margin-right: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; border: 1px solid transparent; font-weight: 600; white-space: nowrap; }
-        .clickable-history.last { background-color: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+        .clickable-history.last { background-color: rgba(255,255,255,0.05); color: var(--primary-light); border-color: var(--primary); }
         .clickable-history.best { background-color: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.3); }
         .clickable-history.coach { background-color: rgba(168, 85, 247, 0.15); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); animation: glow 2s infinite alternate; }
 
@@ -35,9 +47,10 @@
         .nav-item { color: #64748b; text-align: center; flex: 1; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item i { width: 24px; height: 24px; transition: 0.2s; }
         .nav-item span { font-size: 10px; font-weight: 600; }
-        .nav-item.active { color: #3b82f6; }
-        .nav-item.active i { transform: translateY(-2px); color: #60a5fa; }
+        .nav-item.active { color: var(--primary-light); }
+        .nav-item.active i { transform: translateY(-2px); color: var(--primary); }
 
+        /* PAGES LOGIC */
         .page-view { display: none; opacity: 0; animation: fadeIn 0.2s forwards; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -57,16 +70,28 @@
         
         /* GRAPHIQUE */
         .chart-container { height: 150px; width: 100%; display: flex; align-items: flex-end; gap: 8px; padding-top: 20px; }
-        .chart-bar { flex: 1; background: linear-gradient(to top, #3b82f6, #60a5fa); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: height 0.5s ease; }
+        .chart-bar { flex: 1; background: linear-gradient(to top, var(--primary), var(--primary-light)); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: height 0.5s ease; }
         .chart-bar span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #94a3b8; width: 100%; text-align: center; }
         
-        /* STYLE NUTRITION */
+        /* NUTRITION & SETTINGS */
         .meal-card { border-left: 4px solid transparent; }
-        .meal-card.today { border-color: #3b82f6; background-color: rgba(30, 41, 59, 0.8); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+        .meal-card.today { border-color: var(--primary); background-color: rgba(30, 41, 59, 0.8); box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
         .meal-tag { font-size: 10px; text-transform: uppercase; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
         .tag-muscu { background-color: #1e3a8a; color: #93c5fd; }
         .tag-run { background-color: #451a03; color: #fbbf24; }
         .tag-rest { background-color: #064e3b; color: #6ee7b7; }
+        
+        .food-item { background: #334155; padding: 8px; border-radius: 8px; font-size: 11px; color: #cbd5e1; display: flex; align-items: center; gap: 6px; }
+        .water-bar-bg { width: 100%; height: 8px; background: #334155; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        .water-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s; }
+
+        /* TOGGLE SWITCH */
+        .toggle-checkbox:checked { right: 0; border-color: var(--primary); }
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--primary); }
+        .toggle-label { width: 44px; height: 24px; position: relative; display: block; background: #334155; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .toggle-label:after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .toggle-checkbox:checked + .toggle-label:after { transform: translateX(100%); }
+        .toggle-checkbox { display: none; }
 
         select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem auto; padding-right: 2.5rem; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(234, 88, 12, 0); } 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); } }
@@ -77,7 +102,7 @@
     <header class="flex justify-between items-center mb-6 px-1">
         <div>
             <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300" id="header-title">Gym & Run</h1>
-            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase" id="header-subtitle">Coach AI V5</p>
+            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase" id="header-subtitle">Coach AI V9</p>
         </div>
         <div class="bg-slate-800 p-2 rounded-full border border-slate-700 shadow-lg">
             <i data-lucide="brain-circuit" class="w-5 h-5 text-purple-400"></i>
@@ -92,14 +117,11 @@
             </div>
         </div>
 
-	<div class="mb-4 px-1">
-    <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1 block ml-1">Date de la séance</label>
-    <input type="date" id="session-date" class="input-dark text-center text-slate-300 font-mono">
-    <script>
-        // Met la date d'aujourd'hui par défaut
-        document.getElementById('session-date').valueAsDate = new Date();
-    </script>
-</div>
+        <div class="mb-4 px-1">
+            <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1 block ml-1">Date de la séance</label>
+            <input type="date" id="session-date" class="input-dark text-center text-slate-300 font-mono">
+            <script>document.getElementById('session-date').valueAsDate = new Date();</script>
+        </div>
         <div id="app-content"></div>
     </div>
 
@@ -119,27 +141,134 @@
     </div>
 
     <div id="view-nutrition" class="page-view">
-        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="utensils" class="w-5 h-5 text-blue-400"></i> Plan Nutritionnel</h2>
-        <div id="nutrition-list" class="space-y-3">
-            </div>
-    </div>
-
-    <div id="view-settings" class="page-view">
-        <h2 class="text-lg font-bold text-white mb-4">Paramètres</h2>
-        <div class="space-y-4">
-            <div class="card">
-                <h3 class="font-bold text-white mb-2 flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-blue-400"></i> Données</h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="exportData()" class="btn-secondary text-sm"><i data-lucide="download" class="w-4 h-4"></i> Sauvegarder</button>
-                    <button onclick="document.getElementById('import-file').click()" class="btn-secondary text-sm"><i data-lucide="upload" class="w-4 h-4"></i> Restaurer</button>
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="utensils" class="w-5 h-5 text-blue-400"></i> Coach Nutrition</h2>
+        
+        <div class="card bg-slate-800/50 border-slate-700 mb-6 relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex justify-between items-end mb-2">
+                    <div>
+                        <h3 class="font-bold text-blue-100 flex items-center gap-2"><i data-lucide="glass-water" class="w-4 h-4"></i> Hydratation</h3>
+                        <p class="text-xs text-blue-300" id="water-text">0 / 2500 ml</p>
+                    </div>
+                    <button onclick="addWater()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors">+ 250ml</button>
                 </div>
-                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(this)">
+                <div class="water-bar-bg"><div id="water-bar" class="water-bar-fill"></div></div>
             </div>
-            <div class="card border-red-900/30 bg-red-900/10">
-                <button onclick="clearData()" class="w-full py-3 text-red-400 text-sm font-bold border border-red-900/50 rounded-lg hover:bg-red-900/20">Tout effacer</button>
+        </div>
+
+        <div class="card bg-slate-800 border-slate-700 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-white text-sm">Eau : 7 Derniers jours</h3>
+                <span class="text-xs text-blue-300 font-bold bg-blue-900/30 px-2 py-1 rounded" id="water-avg">Moy: 0L</span>
+            </div>
+            <div id="water-chart" class="h-32 w-full flex items-end justify-between gap-1 px-1"></div>
+        </div>
+
+        <div id="nutrition-list" class="space-y-3 mb-8"></div>
+
+        <h3 class="text-md font-bold text-white mb-3 mt-8 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> Guide des Aliments</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="card p-3 !mb-0 border-orange-500/30">
+                <h4 class="text-xs font-bold text-orange-300 mb-2 uppercase">⚡ Glucides</h4>
+                <div class="space-y-1"><div class="food-item">🍚 Riz Basmati</div><div class="food-item">🥣 Avoine</div><div class="food-item">🍠 Patate Douce</div></div>
+            </div>
+            <div class="card p-3 !mb-0 border-blue-500/30">
+                <h4 class="text-xs font-bold text-blue-300 mb-2 uppercase">🥩 Protéines</h4>
+                <div class="space-y-1"><div class="food-item">🍗 Poulet</div><div class="food-item">🥚 Œufs</div><div class="food-item">🐟 Poisson</div></div>
             </div>
         </div>
     </div>
+
+    <div id="view-settings" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4">Centre de Contrôle</h2>
+        
+        <div class="card border-l-4 border-l-purple-500">
+            <h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="user-circle" class="w-5 h-5 text-purple-400"></i> Profil & Biométrie</h3>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Taille (cm)</label>
+                    <input type="number" id="user-height" class="input-dark" placeholder="175" onchange="saveSettings()">
+                </div>
+                <div>
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Age</label>
+                    <input type="number" id="user-age" class="input-dark" placeholder="25" onchange="saveSettings()">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-1">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Objectif Poids (kg)</label>
+                    <span id="weight-progress-txt" class="text-xs text-purple-300">--</span>
+                </div>
+                <input type="number" step="0.1" id="user-target-weight" class="input-dark" placeholder="75.0" onchange="saveSettings()">
+                <div class="w-full bg-slate-900 rounded-full h-2 mt-2 overflow-hidden">
+                    <div id="weight-progress-bar" class="bg-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="bio-stats" class="bg-slate-800/80 p-3 rounded-lg text-center text-xs text-slate-300 border border-slate-700">
+                Remplis tes infos pour voir ton IMC et Besoins.
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5 text-blue-400"></i> Préférences</h3>
+            
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm text-slate-300 font-medium">Sons (Timer)</span>
+                <div>
+                    <input type="checkbox" id="pref-sound" class="toggle-checkbox" onchange="saveSettings()" checked>
+                    <label for="pref-sound" class="toggle-label"></label>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm text-slate-300 font-medium">Vibration Haptique</span>
+                <div>
+                    <input type="checkbox" id="pref-vibe" class="toggle-checkbox" onchange="saveSettings()" checked>
+                    <label for="pref-vibe" class="toggle-label"></label>
+                </div>
+            </div>
+            <div class="mb-2">
+                 <div class="flex justify-between mb-1">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Objectif Eau</label>
+                    <span class="text-xs text-blue-400 font-bold" id="water-val-disp">2500ml</span>
+                 </div>
+                 <input type="range" id="pref-water" min="1500" max="4000" step="250" class="w-full accent-blue-500" onchange="saveSettings(); document.getElementById('water-val-disp').innerText = this.value + 'ml'">
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 text-pink-400"></i> Thème App</h3>
+            <div class="flex gap-4 justify-center">
+                <button onclick="setTheme('blue')" class="w-10 h-10 rounded-full bg-blue-500 border-2 border-slate-600 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                <button onclick="setTheme('red')" class="w-10 h-10 rounded-full bg-red-500 border-2 border-slate-600 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                <button onclick="setTheme('green')" class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-slate-600 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+            </div>
+        </div>
+
+        <div class="card border-slate-700">
+            <h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="hard-drive" class="w-5 h-5 text-slate-400"></i> Données</h3>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <button onclick="exportData()" class="btn-secondary text-xs"><i data-lucide="download" class="w-3 h-3"></i> Sauvegarder</button>
+                <button onclick="document.getElementById('import-file').click()" class="btn-secondary text-xs"><i data-lucide="upload" class="w-3 h-3"></i> Restaurer</button>
+            </div>
+            <button onclick="clearData()" class="w-full py-3 text-red-400 text-xs font-bold border border-red-900/50 rounded-lg hover:bg-red-900/20">Réinitialisation Usine</button>
+            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(this)">
+        </div>
+
+        <div class="text-center text-[10px] text-slate-600 mt-6 pb-4">
+            <p>Gym & Run Coach v9.0</p>
+            <a href="mailto:support@gymrun.app" class="underline hover:text-slate-400">Signaler un bug</a>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-item active" onclick="switchTab('tracker', this)"><i data-lucide="dumbbell"></i><span>Séance</span></div>
+        <div class="nav-item" onclick="switchTab('history', this)"><i data-lucide="calendar-days"></i><span>Journal</span></div>
+        <div class="nav-item" onclick="switchTab('stats', this)"><i data-lucide="bar-chart-2"></i><span>Stats</span></div>
+        <div class="nav-item" onclick="switchTab('nutrition', this)"><i data-lucide="utensils"></i><span>Nutri</span></div>
+        <div class="nav-item" onclick="switchTab('settings', this)"><i data-lucide="settings"></i><span>Outils</span></div>
+    </nav>
 
     <div id="calc-modal" onclick="closeCalc()">
         <div class="bg-slate-900 p-6 rounded-2xl w-80 text-center border border-slate-700 shadow-2xl transform scale-100" onclick="event.stopPropagation()">
@@ -151,20 +280,95 @@
         </div>
     </div>
 
-<footer style ="padding-top: 40px;">
-<nav class="navbar">
-        <div class="nav-item active" onclick="switchTab('tracker', this)"><i data-lucide="dumbbell"></i><span>Séance</span></div>
-        <div class="nav-item" onclick="switchTab('history', this)"><i data-lucide="calendar-days"></i><span>Journal</span></div>
-        <div class="nav-item" onclick="switchTab('stats', this)"><i data-lucide="bar-chart-2"></i><span>Stats</span></div>
-        <div class="nav-item" onclick="switchTab('nutrition', this)"><i data-lucide="utensils"></i><span>Nutri</span></div>
-        <div class="nav-item" onclick="switchTab('settings', this)"><i data-lucide="settings"></i><span>Outils</span></div>
-    </nav>
-</footer>
     <div id="toast"><span id="toast-msg">Message</span></div>
     <audio id="timer-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
 <script>
-    // --- 1. DONNÉES DU PROGRAMME ---
+    // --- 1. SETTINGS & THEME LOGIC (NEW) ---
+    let appSettings = {
+        height: null, age: null, targetWeight: null, waterGoal: 2500, sound: true, vibe: true, theme: 'blue'
+    };
+
+    function loadSettings() {
+        const saved = localStorage.getItem('gym_tracker_settings');
+        if(saved) appSettings = JSON.parse(saved);
+        
+        // Apply to UI
+        document.getElementById('user-height').value = appSettings.height || '';
+        document.getElementById('user-age').value = appSettings.age || '';
+        document.getElementById('user-target-weight').value = appSettings.targetWeight || '';
+        document.getElementById('pref-sound').checked = appSettings.sound;
+        document.getElementById('pref-vibe').checked = appSettings.vibe;
+        document.getElementById('pref-water').value = appSettings.waterGoal;
+        document.getElementById('water-val-disp').innerText = appSettings.waterGoal + 'ml';
+        
+        setTheme(appSettings.theme, false); // false = no save (already loaded)
+        calcBio();
+    }
+
+    function saveSettings() {
+        appSettings.height = document.getElementById('user-height').value;
+        appSettings.age = document.getElementById('user-age').value;
+        appSettings.targetWeight = document.getElementById('user-target-weight').value;
+        appSettings.sound = document.getElementById('pref-sound').checked;
+        appSettings.vibe = document.getElementById('pref-vibe').checked;
+        appSettings.waterGoal = parseInt(document.getElementById('pref-water').value);
+        
+        localStorage.setItem('gym_tracker_settings', JSON.stringify(appSettings));
+        calcBio();
+        updateWaterDisplay(); // Refresh water goal if changed
+    }
+
+    function calcBio() {
+        // Besoin du poids actuel (dernier enregistré dans le tracker poids, mais on l'a retiré, 
+        // donc on va chercher le dernier poids de séance s'il existe ou juste faire avec taille/age)
+        // Pour simplifier V9 sans l'onglet Poids, on va estimer le BMR de base.
+        const h = parseInt(appSettings.height);
+        const a = parseInt(appSettings.age);
+        
+        if(h && a) {
+            // Formule simplifiée Mifflin-St Jeor (Poids moyen 75kg si inconnu)
+            const weight = 75; 
+            const bmr = (10 * weight) + (6.25 * h) - (5 * a) + 5;
+            const imc = (weight / ((h/100)*(h/100))).toFixed(1);
+            
+            document.getElementById('bio-stats').innerHTML = `
+                <div class="flex justify-around">
+                    <div>
+                        <div class="text-xs text-slate-400">IMC (Est.)</div>
+                        <div class="text-lg font-bold text-white">${imc}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">BMR (Repos)</div>
+                        <div class="text-lg font-bold text-white">${Math.round(bmr)} kcal</div>
+                    </div>
+                </div>`;
+        }
+    }
+
+    function setTheme(color, save = true) {
+        const root = document.documentElement;
+        let primary, primaryDark, primaryLight;
+
+        if(color === 'red') {
+            primary = '#ef4444'; primaryDark = '#b91c1c'; primaryLight = '#fca5a5';
+        } else if (color === 'green') {
+            primary = '#10b981'; primaryDark = '#047857'; primaryLight = '#6ee7b7';
+        } else { // Blue default
+            primary = '#3b82f6'; primaryDark = '#1d4ed8'; primaryLight = '#60a5fa';
+        }
+
+        root.style.setProperty('--primary', primary);
+        root.style.setProperty('--primary-dark', primaryDark);
+        root.style.setProperty('--primary-light', primaryLight);
+
+        if(save) {
+            appSettings.theme = color;
+            saveSettings();
+        }
+    }
+
+    // --- 2. DONNÉES DU PROGRAMME ---
     const program = {
         1: { type: 'muscu', title: 'Lundi : PUSH', desc: 'Pecs, Épaules, Triceps',
             exercises: [
@@ -199,7 +403,7 @@
         0: { type: 'rest', title: 'Dimanche : REPOS', desc: 'Récupération - Low Carb', exercises: [] }
     };
 
-    // --- 2. INITIALISATION ---
+    // --- 3. INITIALISATION ---
     const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
     let currentDayIndex = new Date().getDay();
 
@@ -213,9 +417,10 @@
     });
 
     lucide.createIcons();
+    loadSettings(); // Charger settings et thème
     loadDailyView(currentDayIndex);
 
-    // --- 3. NAVIGATION ---
+    // --- 4. NAVIGATION ---
     function switchTab(tabId, element) {
         document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
         document.getElementById('view-' + tabId).classList.add('active');
@@ -224,7 +429,7 @@
         
         if(tabId === 'history') renderHistory();
         if(tabId === 'stats') { renderStats(); renderVolumeChart(); }
-        if(tabId === 'nutrition') { renderNutrition(); }
+        if(tabId === 'nutrition') { renderNutrition(); updateWaterDisplay(); renderWaterChart(); }
         
         const titles = { 'tracker': 'Gym & Run', 'history': 'Journal', 'stats': 'Statistiques', 'nutrition': 'Coach Nutri', 'settings': 'Outils' };
         document.getElementById('header-title').innerText = titles[tabId];
@@ -235,7 +440,7 @@
         loadDailyView(currentDayIndex);
     }
 
-    // --- 4. CORE: TRACKER & COACHING ---
+    // --- 5. CORE FUNCTIONS ---
     function getCoachAdvice(lastData, targetRepString) {
         if(!lastData) return null;
         let maxTarget = 12; 
@@ -288,26 +493,14 @@
                 historyHTML = `<div class="text-xs text-slate-500 mb-3 italic flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Pas d'historique</div>`;
             } else {
                 const lastText = isCardio ? `${lastData.val1}km / ${lastData.val2}` : `${lastData.val1}kg x ${lastData.val2}`;
-                
                 let coachHTML = '';
                 if(!isCardio) {
                     const advice = getCoachAdvice(lastData, exo.reps);
                     if(advice) {
-                        coachHTML = `
-                            <div onclick="fillInputs(${index}, '${advice.val1}', '${advice.val2}')" 
-                                 class="clickable-history coach" title="Appliquer le conseil">
-                                <i data-lucide="sparkles" class="w-3 h-3"></i> Coach: <strong>${advice.msg}</strong>
-                            </div>`;
+                        coachHTML = `<div onclick="fillInputs(${index}, '${advice.val1}', '${advice.val2}')" class="clickable-history coach" title="Appliquer le conseil"><i data-lucide="sparkles" class="w-3 h-3"></i> Coach: <strong>${advice.msg}</strong></div>`;
                     }
                 }
-
-                historyHTML = `
-                    <div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
-                        <div onclick="fillInputs(${index}, '${lastData.val1}', '${lastData.val2}')" class="clickable-history last" title="Copier dernier">
-                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Last: <strong>${lastText}</strong>
-                        </div>
-                        ${coachHTML}
-                    </div>`;
+                historyHTML = `<div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar"><div onclick="fillInputs(${index}, '${lastData.val1}', '${lastData.val2}')" class="clickable-history last" title="Copier dernier"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Last: <strong>${lastText}</strong></div>${coachHTML}</div>`;
             }
 
             let actionBtn = '';
@@ -343,10 +536,7 @@
                     <div class="grid grid-cols-2 gap-3 relative">
                         <div>
                             <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1.5 block ml-1">${label1}</label>
-                            <div class="relative">
-                                <input type="number" id="val1_${index}" name="val1_${index}" class="input-dark font-mono text-center text-blue-100 pl-2 pr-6" placeholder="${place1}" inputmode="decimal">
-                                ${calcBtn}
-                            </div>
+                            <div class="relative"><input type="number" id="val1_${index}" name="val1_${index}" class="input-dark font-mono text-center text-blue-100 pl-2 pr-6" placeholder="${place1}" inputmode="decimal">${calcBtn}</div>
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1.5 block ml-1">${label2}</label>
@@ -357,10 +547,7 @@
         });
 
         html += `
-            <div class="card">
-                <label class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2"><i data-lucide="sticky-note" class="w-3 h-3"></i> Notes</label>
-                <textarea name="notes" class="input-dark text-sm min-h-[60px] font-normal text-slate-300" placeholder="Sensations..."></textarea>
-            </div>
+            <div class="card"><label class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2"><i data-lucide="sticky-note" class="w-3 h-3"></i> Notes</label><textarea name="notes" class="input-dark text-sm min-h-[60px] font-normal text-slate-300" placeholder="Sensations..."></textarea></div>
             <button type="button" onclick="saveWorkout(${dayIndex})" class="btn-primary mb-8 text-lg shadow-blue-900/20 shadow-xl">Valider la séance</button>
             </form>`;
 
@@ -368,447 +555,274 @@
         lucide.createIcons();
     }
 
-    // --- 5. NOUVELLE FONCTION NUTRITION ---
-    function renderNutrition() {
+    // --- WATER ---
+    function getWater() {
+        const todayStr = new Date().toLocaleDateString('fr-FR');
+        const data = JSON.parse(localStorage.getItem('gym_tracker_water') || '[]');
+        const entry = data.find(d => d.date === todayStr);
+        return entry ? entry.amount : 0;
+    }
+
+    function addWater() {
+        const todayStr = new Date().toLocaleDateString('fr-FR');
+        let data = JSON.parse(localStorage.getItem('gym_tracker_water') || '[]');
+        let index = data.findIndex(d => d.date === todayStr);
+        if(index !== -1) { data[index].amount += 250; } else { data.push({ date: todayStr, amount: 250 }); }
+        localStorage.setItem('gym_tracker_water', JSON.stringify(data));
+        updateWaterDisplay(); renderWaterChart();
+        if(appSettings.vibe && navigator.vibrate) navigator.vibrate(50);
+    }
+
+    function updateWaterDisplay() {
+        const current = getWater();
+        const max = appSettings.waterGoal;
+        const pct = Math.min((current / max) * 100, 100);
+        document.getElementById('water-text').innerText = `${current} / ${max} ml`;
+        document.getElementById('water-bar').style.width = `${pct}%`;
+    }
+
+    function renderWaterChart() {
+        const container = document.getElementById('water-chart');
+        const data = JSON.parse(localStorage.getItem('gym_tracker_water') || '[]');
+        const last7Days = [];
+        let totalWeek = 0;
+        
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            const dateStr = d.toLocaleDateString('fr-FR');
+            const entry = data.find(item => item.date === dateStr);
+            const amount = entry ? entry.amount : 0;
+            totalWeek += amount;
+            last7Days.push({ day: d.toLocaleDateString('fr-FR', { weekday: 'short' }), amount: amount });
+        }
+        const avg = Math.round(totalWeek / 7);
+        document.getElementById('water-avg').innerText = `Moy: ${(avg/1000).toFixed(1)}L`;
+
+        let html = '';
+        last7Days.forEach(day => {
+            const heightPct = Math.min((day.amount / 3000) * 100, 100);
+            const colorClass = day.amount >= appSettings.waterGoal ? 'bg-blue-400' : 'bg-blue-800';
+            html += `<div class="flex flex-col items-center w-full group relative"><div class="w-full ${colorClass} rounded-t-sm transition-all duration-500 relative" style="height: ${heightPct}%"><span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] bg-slate-900 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-slate-700">${day.amount}ml</span></div><span class="text-[9px] text-slate-500 mt-1 uppercase">${day.day.replace('.','')}</span><div class="absolute bottom-[${(appSettings.waterGoal/3000)*100}%] w-full h-[1px] bg-red-500/30 z-0 pointer-events-none"></div></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // --- RENDER NUTRITION ---
+    async function renderNutrition() {
         const list = document.getElementById('nutrition-list');
         const today = new Date().getDay();
         
-        // Configuration des jours
-        const nutriPlan = [
-            { day: 1, type: 'muscu', title: 'Lundi (Muscu)' },
-            { day: 2, type: 'run', title: 'Mardi (Run)' },
-            { day: 3, type: 'muscu', title: 'Mercredi (Muscu)' },
-            { day: 4, type: 'run', title: 'Jeudi (Run)' },
-            { day: 5, type: 'muscu', title: 'Vendredi (Muscu)' },
-            { day: 6, type: 'run', title: 'Samedi (Run)' },
-            { day: 0, type: 'rest', title: 'Dimanche (Repos)' }
-        ];
-
-        let html = '';
-        
-        // On réorganise pour commencer par Lundi
-        const sortedPlan = [...nutriPlan.slice(0, 6), nutriPlan[6]]; // [Lun...Sam] + [Dim]
-        // Petite correction : nutriPlan[0] est Lundi (index 0 dans le tableau trié)
-        
-        nutriPlan.forEach(item => {
-            const isToday = item.day === today;
-            const activeClass = isToday ? 'today' : 'opacity-70 grayscale hover:grayscale-0 transition-all';
-            const icon = item.type === 'muscu' ? 'dumbbell' : (item.type === 'run' ? 'footprints' : 'coffee');
+        try {
+            // Appel du fichier externe
+            const response = await fetch('nutrition.json');
             
-            let tag = '';
-            let content = '';
+            if (!response.ok) {
+                throw new Error("Impossible de charger le fichier nutrition.json");
+            }
+            
+            const nutriPlan = await response.json();
+            let html = '';
+            
+            // On réorganise pour l'affichage (Lundi en premier)
+            // On cherche les jours dans l'ordre 1,2,3,4,5,6,0
+            const orderedDays = [1, 2, 3, 4, 5, 6, 0];
+            
+            orderedDays.forEach(dayIndex => {
+                // Trouver le plan correspondant au jour
+                const item = nutriPlan.find(p => p.day === dayIndex);
+                if(!item) return;
 
-            if (item.type === 'muscu') {
-                tag = '<span class="meal-tag tag-muscu">Force</span>';
-                content = `
-                    <ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">
-                        <li><strong>Matin:</strong> Avoine + Œufs (Glucides lents).</li>
-                        <li><strong>Midi:</strong> Riz/Pâtes + Viande (Energie).</li>
-                        <li><strong>Post-Séance:</strong> Whey ou Repas riche en protéines.</li>
-                        <li><strong>Dîner:</strong> Féculents modérés + Légumes.</li>
-                    </ul>`;
-            } else if (item.type === 'run') {
-                tag = '<span class="meal-tag tag-run">Cardio</span>';
-                content = `
-                    <ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">
-                        <li><strong>Hydratation:</strong> Bois +500ml d'eau.</li>
-                        <li><strong>Midi:</strong> Glucides complexes (Quinoa/Lentilles).</li>
-                        <li><strong>Avant course:</strong> Banane ou poignée d'amandes.</li>
-                        <li><strong>Dîner:</strong> Léger (Soupe + Poisson).</li>
-                    </ul>`;
-            } else {
-                tag = '<span class="meal-tag tag-rest">Repos</span>';
-                content = `
-                    <ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">
-                        <li><strong>Objectif:</strong> Récupération (Low Carb).</li>
-                        <li><strong>Assiette:</strong> 50% Légumes, 25% Protéines, 25% Gras.</li>
-                        <li><strong>Focus:</strong> Avocat, Saumon, Noix, Huile d'olive.</li>
-                        <li><strong>Soir:</strong> Zéro féculents si possible.</li>
-                    </ul>`;
+                const isToday = item.day === today;
+                const activeClass = isToday ? 'today' : 'opacity-70 grayscale hover:grayscale-0 transition-all';
+                const icon = item.type === 'muscu' ? 'dumbbell' : (item.type === 'run' ? 'footprints' : 'coffee');
+                
+                // Gestion des tags de couleur
+                let tag = '';
+                if (item.type === 'muscu') tag = '<span class="meal-tag tag-muscu">Force</span>';
+                else if (item.type === 'run') tag = '<span class="meal-tag tag-run">Cardio</span>';
+                else tag = '<span class="meal-tag tag-rest">Repos</span>';
+
+                // Construction de la liste des repas depuis le JSON
+                let detailsHtml = '<ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">';
+                item.details.forEach(detail => {
+                    detailsHtml += `<li><strong>${detail.label}:</strong> ${detail.text}</li>`;
+                });
+                detailsHtml += '</ul>';
+
+                html += `
+                    <div class="card meal-card ${activeClass} mb-3" id="day-${item.day}">
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i>
+                                <h3 class="font-bold text-white text-sm">${item.title}</h3>
+                            </div>
+                            ${tag}
+                        </div>
+                        ${detailsHtml}
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+            lucide.createIcons();
+            
+            // Auto-scroll
+            if(document.querySelector('.today')) {
+                setTimeout(() => document.querySelector('.today').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
             }
 
-            html += `
-                <div class="card meal-card ${activeClass} mb-3">
-                    <div class="flex justify-between items-center mb-1">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i>
-                            <h3 class="font-bold text-white text-sm">${item.title}</h3>
-                        </div>
-                        ${tag}
-                    </div>
-                    ${content}
-                </div>
-            `;
-        });
-
-        list.innerHTML = html;
-        lucide.createIcons();
-        
-        // Auto-scroll vers le jour actuel si besoin (optionnel)
-        if(document.querySelector('.today')) {
-            setTimeout(() => document.querySelector('.today').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        } catch (error) {
+            console.error(error);
+            list.innerHTML = `<div class="text-red-400 text-center p-4 border border-red-900 rounded-lg bg-red-900/10">
+                <p class="font-bold">Erreur de chargement</p>
+                <p class="text-xs mt-1">Assurez-vous que le fichier <b>nutrition.json</b> est bien présent.</p>
+                <p class="text-[10px] mt-2 opacity-70">Note : Cela nécessite un serveur local (Live Server).</p>
+            </div>`;
         }
     }
 
-    // --- 6. STATS & UTILS ---
+    // --- HELPERS ---
+    function saveWorkout(dayIndex) {
+        const form = document.getElementById('workout-form');
+        const dayPlan = program[dayIndex];
+        const dateInput = document.getElementById('session-date').value;
+        let dateStr, timestamp;
+        if (dateInput) { const [y, m, d] = dateInput.split('-'); dateStr = `${d}/${m}/${y}`; timestamp = new Date(y, m - 1, d).getTime(); }
+        else { const now = new Date(); dateStr = now.toLocaleDateString('fr-FR'); timestamp = now.getTime(); }
+        
+        let sessionData = { date: dateStr, timestamp: timestamp, title: dayPlan.title, type: dayPlan.type, notes: form.notes ? form.notes.value : "", exercises: [] };
+        dayPlan.exercises.forEach((exo, index) => {
+            const val1 = form[`val1_${index}`].value;
+            const val2 = form[`val2_${index}`].value;
+            if(val1 || val2) sessionData.exercises.push({ name: exo.name, val1: val1 || '-', val2: val2 || '-' });
+        });
+        if (sessionData.exercises.length === 0) { showToast("Vide !", true); return; }
+        let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        history.unshift(sessionData); history.sort((a, b) => b.timestamp - a.timestamp);
+        localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
+        showToast("Validé ! 🔥"); form.reset(); document.getElementById('session-date').valueAsDate = new Date(); loadDailyView(dayIndex);
+    }
+
+    function editSessionDate(index) {
+        let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        const newDateStr = prompt("Date (JJ/MM/AAAA) :", history[index].date);
+        if (newDateStr && newDateStr !== history[index].date) {
+            const parts = newDateStr.split('/');
+            if(parts.length === 3) {
+                history[index].date = newDateStr; history[index].timestamp = new Date(parts[2], parts[1]-1, parts[0]).getTime();
+                history.sort((a, b) => b.timestamp - a.timestamp);
+                localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
+                renderHistory(); renderStats(); showToast("Modifié !");
+            }
+        }
+    }
+
+    function renderStats() {
+        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        const statsDiv = document.getElementById('weekly-stats');
+        const now = new Date(); const todayStr = now.toLocaleDateString('fr-FR'); 
+        const curMonth = now.getMonth(); const curYear = now.getFullYear();
+        const data = { day: { gym: 0, run: 0 }, month: { gym: 0, run: 0 }, year: { gym: 0, run: 0 }, all: { gym: 0, run: 0 } };
+
+        history.forEach(session => {
+            const [d, m, y] = session.date.split('/').map(Number);
+            const isToday = session.date === todayStr; const isMonth = (m - 1) === curMonth && y === curYear; const isYear = y === curYear;
+            if (session.type === 'muscu') { data.all.gym++; if(isYear) data.year.gym++; if(isMonth) data.month.gym++; if(isToday) data.day.gym++; } 
+            else if (session.type === 'cardio') {
+                let km = 0; session.exercises.forEach(ex => { const val = parseFloat(ex.val1.replace(',', '.')); if (!isNaN(val)) km += val; });
+                data.all.run += km; if(isYear) data.year.run += km; if(isMonth) data.month.run += km; if(isToday) data.day.run += km;
+            }
+        });
+        const mkCard = (label, icon, gym, run) => `<div class="bg-slate-700/50 p-3 rounded-xl border border-slate-600 flex flex-col justify-between h-24"><div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1"><i data-lucide="${icon}" class="w-3 h-3"></i> ${label}</div><div><div class="flex justify-between items-center mb-1"><span class="text-xs text-blue-300 font-bold">Muscu</span><span class="text-lg font-black text-white leading-none">${gym}</span></div><div class="flex justify-between items-center"><span class="text-xs text-amber-300 font-bold">Run</span><span class="text-lg font-black text-white leading-none">${run.toFixed(1)}<span class="text-[10px] text-slate-500 font-normal ml-0.5">km</span></span></div></div></div>`;
+        statsDiv.innerHTML = `${mkCard('Aujourd\'hui', 'calendar', data.day.gym, data.day.run)}${mkCard('Ce Mois', 'calendar-days', data.month.gym, data.month.run)}${mkCard('Cette Année', 'calendar-range', data.year.gym, data.year.run)}${mkCard('Total', 'trophy', data.all.gym, data.all.run)}`;
+        lucide.createIcons();
+    }
+
     function renderVolumeChart() {
         const container = document.getElementById('volume-chart');
         const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        const weeks = [0,0,0,0];
-        const now = new Date();
-        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        const weeks = [0,0,0,0]; const now = new Date(); const oneWeek = 7 * 24 * 60 * 60 * 1000;
         history.forEach(session => {
             if(session.type !== 'muscu') return;
-            const diff = now.getTime() - session.timestamp;
-            const weekIndex = 3 - Math.floor(diff / oneWeek);
+            const diff = now.getTime() - session.timestamp; const weekIndex = 3 - Math.floor(diff / oneWeek);
             if(weekIndex >= 0 && weekIndex <= 3) {
-                let sessionVol = 0;
-                session.exercises.forEach(ex => {
-                    const w = parseFloat(ex.val1);
-                    const rStr = ex.val2.split(',').map(s => parseInt(s));
-                    const totalReps = rStr.reduce((a,b) => a + (isNaN(b)?0:b), 0);
-                    if(!isNaN(w)) sessionVol += w * totalReps;
-                });
+                let sessionVol = 0; session.exercises.forEach(ex => { const w = parseFloat(ex.val1); const rStr = ex.val2.split(',').map(s => parseInt(s)); const totalReps = rStr.reduce((a,b) => a + (isNaN(b)?0:b), 0); if(!isNaN(w)) sessionVol += w * totalReps; });
                 weeks[weekIndex] += sessionVol;
             }
         });
         const maxVol = Math.max(...weeks, 1);
         let html = '';
         weeks.forEach((vol, i) => {
-            const heightPct = Math.round((vol / maxVol) * 100);
-            const color = i === 3 ? 'bg-blue-500' : 'bg-slate-700';
+            const heightPct = Math.round((vol / maxVol) * 100); const color = i === 3 ? 'bg-blue-500' : 'bg-slate-700';
             html += `<div class="chart-bar ${color}" style="height: ${heightPct}%"><span class="text-[9px]">${(vol/1000).toFixed(1)}k</span></div>`;
         });
         container.innerHTML = html;
     }
-
-    function openCalc(weightVal) {
-        if(!weightVal) { showToast("Poids manquant", true); return; }
-        const weight = parseFloat(weightVal.replace(',','.'));
-        document.getElementById('calc-target').innerText = weight;
-        document.getElementById('calc-modal').style.display = 'flex';
-        let remainder = (weight - 20) / 2;
-        const div = document.getElementById('calc-result');
-        div.innerHTML = '';
-        if (remainder <= 0) { div.innerHTML = '<span class="text-slate-400 text-sm">Juste la barre (20kg)</span>'; return; }
-        [20, 15, 10, 5, 2.5, 1.25].forEach(p => {
-            while (remainder >= p) {
-                div.innerHTML += `<div class="plate plate-${p.toString().replace('.','-')}">${p}</div>`;
-                remainder -= p; remainder = Math.round(remainder * 100) / 100;
-            }
-        });
-    }
-    function closeCalc() { document.getElementById('calc-modal').style.display = 'none'; }
 
     function getHistoryData(exoName) {
         const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
         let last = null, best = null;
         for (let session of history) {
             const found = session.exercises.find(e => e.name === exoName || e.name.includes(exoName));
-            if (found) {
-                if(!last) last = found;
-                const val = parseFloat(found.val1.replace(',','.'));
-                if (!isNaN(val) && (!best || val > parseFloat(best.val1.replace(',','.')))) best = found;
-            }
+            if (found) { if(!last) last = found; const val = parseFloat(found.val1.replace(',','.')); if (!isNaN(val) && (!best || val > parseFloat(best.val1.replace(',','.')))) best = found; }
         }
         return { last, best };
     }
 
+    function openCalc(weightVal) {
+        if(!weightVal) { showToast("Poids manquant", true); return; }
+        document.getElementById('calc-target').innerText = parseFloat(weightVal.replace(',','.'));
+        document.getElementById('calc-modal').style.display = 'flex';
+        let remainder = (parseFloat(weightVal.replace(',','.')) - 20) / 2;
+        const div = document.getElementById('calc-result'); div.innerHTML = '';
+        if (remainder <= 0) { div.innerHTML = '<span class="text-slate-400 text-sm">Juste la barre (20kg)</span>'; return; }
+        [20, 15, 10, 5, 2.5, 1.25].forEach(p => {
+            while (remainder >= p) { div.innerHTML += `<div class="plate plate-${p.toString().replace('.','-')}">${p}</div>`; remainder -= p; remainder = Math.round(remainder * 100) / 100; }
+        });
+    }
+    function closeCalc() { document.getElementById('calc-modal').style.display = 'none'; }
+
     function showToast(message, isError = false) {
-        const toast = document.getElementById("toast");
-        document.getElementById("toast-msg").innerText = message;
-        toast.className = isError ? "error show" : "show";
-        if(navigator.vibrate) navigator.vibrate(isError ? [50, 50, 50] : 50);
+        const toast = document.getElementById("toast"); document.getElementById("toast-msg").innerText = message;
+        toast.className = isError ? "error show" : "show"; if(appSettings.vibe && navigator.vibrate) navigator.vibrate(50);
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    function fillInputs(index, val1, val2) {
-        document.getElementById(`val1_${index}`).value = val1;
-        document.getElementById(`val2_${index}`).value = val2;
-        showToast("Recopié !");
-    }
-
+    function fillInputs(index, val1, val2) { document.getElementById(`val1_${index}`).value = val1; document.getElementById(`val2_${index}`).value = val2; showToast("Recopié !"); }
+    function parseRestToSeconds(restStr) { if(!restStr) return 60; const match = restStr.match(/\d+/); return match ? parseInt(match[0]) * 60 : 90; }
+    
     let activeTimerInterval = null;
-    function parseRestToSeconds(restStr) {
-        if(!restStr) return 60;
-        const match = restStr.match(/\d+/);
-        return match ? parseInt(match[0]) * 60 : 90;
-    }
-
     function startTimer(btn, duration) {
         if(activeTimerInterval) clearInterval(activeTimerInterval);
-        document.querySelectorAll('.timer-btn').forEach(b => {
-            b.classList.remove('active');
-            b.innerHTML = '<i data-lucide="timer" class="w-3 h-3"></i> ' + b.innerText.split(' ').pop();
-            lucide.createIcons();
-        });
-        let timeLeft = duration;
-        btn.classList.add('active');
+        document.querySelectorAll('.timer-btn').forEach(b => { b.classList.remove('active'); b.innerHTML = '<i data-lucide="timer" class="w-3 h-3"></i> ' + b.innerText.split(' ').pop(); lucide.createIcons(); });
+        let timeLeft = duration; btn.classList.add('active');
         const updateTimer = () => {
-            const min = Math.floor(timeLeft / 60);
-            const sec = timeLeft % 60;
-            btn.innerHTML = `<i data-lucide="hourglass" class="w-3 h-3"></i> ${min}:${sec < 10 ? '0'+sec : sec}`;
-            lucide.createIcons();
-            if (timeLeft <= 0) {
-                clearInterval(activeTimerInterval);
-                btn.classList.remove('active');
-                btn.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> Terminé!`;
-                lucide.createIcons();
-                document.getElementById('timer-sound').play().catch(() => {});
-                if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
-            }
+            const min = Math.floor(timeLeft / 60); const sec = timeLeft % 60;
+            btn.innerHTML = `<i data-lucide="hourglass" class="w-3 h-3"></i> ${min}:${sec < 10 ? '0'+sec : sec}`; lucide.createIcons();
+            if (timeLeft <= 0) { clearInterval(activeTimerInterval); btn.classList.remove('active'); btn.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> Terminé!`; lucide.createIcons(); if(appSettings.sound) document.getElementById('timer-sound').play().catch(() => {}); if(appSettings.vibe && navigator.vibrate) navigator.vibrate([200, 100, 200]); }
             timeLeft--;
         };
-        updateTimer();
-        activeTimerInterval = setInterval(updateTimer, 1000);
-    }
-
-    // --- 7. SAUVEGARDE & SYSTEME ---
-    function saveWorkout(dayIndex) {
-    const form = document.getElementById('workout-form');
-    const dayPlan = program[dayIndex];
-    
-    // MODIFICATION ICI : Récupération de la date du sélecteur
-    const dateInput = document.getElementById('session-date').value; // Format YYYY-MM-DD
-    let dateStr;
-    let timestamp;
-
-    if (dateInput) {
-        const [y, m, d] = dateInput.split('-'); // Découpe YYYY-MM-DD
-        dateStr = `${d}/${m}/${y}`; // Recompose en DD/MM/YYYY pour l'affichage
-        timestamp = new Date(y, m - 1, d).getTime(); // Pour le tri chrono
-    } else {
-        // Fallback si vide
-        const now = new Date();
-        dateStr = now.toLocaleDateString('fr-FR');
-        timestamp = now.getTime();
-    }
-    
-    let sessionData = {
-        date: dateStr,
-        timestamp: timestamp, 
-        title: dayPlan.title,
-        type: dayPlan.type,
-        notes: form.notes ? form.notes.value : "",
-        exercises: []
-    };
-
-    dayPlan.exercises.forEach((exo, index) => {
-        const val1 = form[`val1_${index}`].value;
-        const val2 = form[`val2_${index}`].value;
-        if(val1 || val2) {
-            sessionData.exercises.push({
-                name: exo.name,
-                val1: val1 || '-',
-                val2: val2 || '-'
-            });
-        }
-    });
-
-    if (sessionData.exercises.length === 0) {
-        showToast("Remplis au moins une case !", true);
-        return;
-    }
-
-    let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-    history.unshift(sessionData); 
-    
-    // Optionnel : Retrier l'historique par date si on ajoute une vieille séance
-    history.sort((a, b) => b.timestamp - a.timestamp);
-
-    localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
-
-    showToast("Séance enregistrée ! 🔥");
-    form.reset();
-    document.getElementById('session-date').valueAsDate = new Date(); // Reset date à aujourd'hui
-    loadDailyView(dayIndex);
-}
-
-    // --- NOUVELLE FONCTION STATISTIQUES GLOBALES ---
-    function renderStats() {
-        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        const statsDiv = document.getElementById('weekly-stats');
-        
-        const now = new Date();
-        const todayStr = now.toLocaleDateString('fr-FR'); // Format JJ/MM/AAAA
-        const curMonth = now.getMonth(); // 0-11
-        const curYear = now.getFullYear();
-
-        // Initialisation des compteurs
-        const data = {
-            day: { gym: 0, run: 0 },
-            month: { gym: 0, run: 0 },
-            year: { gym: 0, run: 0 },
-            all: { gym: 0, run: 0 }
-        };
-
-        history.forEach(session => {
-            const [d, m, y] = session.date.split('/').map(Number);
-            
-            // Vérification des dates
-            const isToday = session.date === todayStr;
-            const isMonth = (m - 1) === curMonth && y === curYear;
-            const isYear = y === curYear;
-
-            if (session.type === 'muscu') {
-                data.all.gym++;
-                if (isYear) data.year.gym++;
-                if (isMonth) data.month.gym++;
-                if (isToday) data.day.gym++;
-            } 
-            else if (session.type === 'cardio') {
-                let km = 0;
-                session.exercises.forEach(ex => {
-                    // On gère les virgules et points pour les distances
-                    const val = parseFloat(ex.val1.replace(',', '.'));
-                    if (!isNaN(val)) km += val;
-                });
-                
-                data.all.run += km;
-                if (isYear) data.year.run += km;
-                if (isMonth) data.month.run += km;
-                if (isToday) data.day.run += km;
-            }
-        });
-
-        // Générateur de petite carte stats
-        const mkCard = (label, icon, gym, run) => `
-            <div class="bg-slate-700/50 p-3 rounded-xl border border-slate-600 flex flex-col justify-between h-24">
-                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
-                    <i data-lucide="${icon}" class="w-3 h-3"></i> ${label}
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-blue-300 font-bold">Muscu</span>
-                        <span class="text-lg font-black text-white leading-none">${gym}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-amber-300 font-bold">Run</span>
-                        <span class="text-lg font-black text-white leading-none">${run.toFixed(1)}<span class="text-[10px] text-slate-500 font-normal ml-0.5">km</span></span>
-                    </div>
-                </div>
-            </div>`;
-
-        // Injection du HTML (4 cartes)
-        statsDiv.innerHTML = `
-            ${mkCard('Aujourd\'hui', 'calendar', data.day.gym, data.day.run)}
-            ${mkCard('Ce Mois', 'calendar-days', data.month.gym, data.month.run)}
-            ${mkCard('Cette Année', 'calendar-range', data.year.gym, data.year.run)}
-            ${mkCard('Total', 'trophy', data.all.gym, data.all.run)}
-        `;
-        
-        lucide.createIcons();
+        updateTimer(); activeTimerInterval = setInterval(updateTimer, 1000);
     }
 
     function renderHistory() {
-    const list = document.getElementById('history-list');
-    const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-    
-    if (history.length === 0) {
-        list.innerHTML = '<div class="text-slate-500 text-center py-8 border border-dashed border-slate-700 rounded-xl">Aucune séance. Go ! 🚀</div>';
-        return;
-    }
-
-    let html = '';
-    history.forEach((session, index) => {
-        const isCardio = session.type === 'cardio';
-        const noteHtml = session.notes ? `<div class="text-xs text-slate-400 italic mt-3 bg-slate-900/50 p-2 rounded border-l-2 border-slate-600">"${session.notes}"</div>` : '';
-        const typeColor = isCardio ? 'text-amber-400' : 'text-blue-400';
-        
-        html += `
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
-                <button onclick="deleteSession(${index})" class="absolute top-4 right-4 text-slate-600 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                
-                <div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-700/50">
-                    <div class="bg-slate-700/50 p-2 rounded-lg"><i data-lucide="${isCardio ? 'footprints' : 'dumbbell'}" class="w-5 h-5 ${typeColor}"></i></div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <div class="text-white font-bold text-sm">${session.date}</div>
-                            <button onclick="editSessionDate(${index})" class="text-slate-500 hover:text-blue-400 transition-colors">
-                                <i data-lucide="pencil" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                        <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${session.title.split(':')[1] || session.title}</div>
-                    </div>
-                </div>
-                <ul class="text-sm space-y-2">`;
-        
-        session.exercises.forEach(ex => {
-            let display = isCardio 
-                ? `<span class="text-amber-300 font-bold">${ex.val1}km <span class="text-slate-500 font-normal">en</span> ${ex.val2}</span>`
-                : `<span class="font-mono text-white bg-slate-700 px-2 py-0.5 rounded text-xs border border-slate-600">${ex.val1}kg x ${ex.val2}</span>`;
-            html += `<li class="flex justify-between items-center text-slate-300"><span class="truncate pr-4">${ex.name}</span>${display}</li>`;
+        const list = document.getElementById('history-list');
+        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        if (history.length === 0) { list.innerHTML = '<div class="text-slate-500 text-center py-8">Aucune séance.</div>'; return; }
+        let html = '';
+        history.forEach((session, index) => {
+            const isCardio = session.type === 'cardio'; const color = isCardio ? 'text-amber-400' : 'text-blue-400';
+            html += `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group"><button onclick="deleteSession(${index})" class="absolute top-4 right-4 text-slate-600 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-700/50"><div class="bg-slate-700/50 p-2 rounded-lg"><i data-lucide="${isCardio ? 'footprints' : 'dumbbell'}" class="w-5 h-5 ${color}"></i></div><div><div class="flex items-center gap-2"><div class="text-white font-bold text-sm">${session.date}</div><button onclick="editSessionDate(${index})" class="text-slate-500 hover:text-blue-400"><i data-lucide="pencil" class="w-3 h-3"></i></button></div><div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${session.title.split(':')[1] || session.title}</div></div></div><ul class="text-sm space-y-2">`;
+            session.exercises.forEach(ex => { let disp = isCardio ? `<span class="text-amber-300 font-bold">${ex.val1}km</span>` : `<span class="bg-slate-700 px-2 rounded text-xs border border-slate-600">${ex.val1}kg x ${ex.val2}</span>`; html += `<li class="flex justify-between items-center text-slate-300"><span class="truncate pr-4">${ex.name}</span>${disp}</li>`; });
+            html += `</ul></div>`;
         });
-        html += `</ul>${noteHtml}</div>`;
-    });
-    list.innerHTML = html;
-    lucide.createIcons();
-}
-
-// AJOUT : Nouvelle fonction pour modifier la date
-function editSessionDate(index) {
-    let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-    const current = history[index].date; // Format DD/MM/YYYY
-    
-    // On demande la nouvelle date
-    const newDateStr = prompt("Modifier la date (Format JJ/MM/AAAA) :", current);
-    
-    if (newDateStr && newDateStr !== current) {
-        // Validation basique du format (optionnelle mais conseillée)
-        const parts = newDateStr.split('/');
-        if(parts.length === 3) {
-            history[index].date = newDateStr;
-            // Mise à jour du timestamp pour que les stats restent justes
-            const newTime = new Date(parts[2], parts[1]-1, parts[0]).getTime();
-            if(!isNaN(newTime)) {
-                history[index].timestamp = newTime;
-                // Re-trier l'historique
-                history.sort((a, b) => b.timestamp - a.timestamp);
-            }
-            
-            localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
-            renderHistory();
-            renderStats(); // Met à jour les stats hebdo
-            showToast("Date modifiée !");
-        } else {
-            showToast("Format invalide (JJ/MM/AAAA)", true);
-        }
-    }
-}
-
-    function deleteSession(index) {
-        if(confirm("Supprimer ?")) {
-            let h = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'); h.splice(index, 1);
-            localStorage.setItem('gym_tracker_data_v2', JSON.stringify(h));
-            renderHistory(); renderStats(); renderVolumeChart();
-        }
+        list.innerHTML = html; lucide.createIcons();
     }
 
-    function exportData() {
-        const data = { history: JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]') };
-        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `gym_backup_${new Date().toISOString().slice(0,10)}.json`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    }
-
-    function importData(input) {
-        const file = input.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if(data.history) localStorage.setItem('gym_tracker_data_v2', JSON.stringify(data.history));
-                else if(Array.isArray(data)) localStorage.setItem('gym_tracker_data_v2', JSON.stringify(data));
-                showToast("Succès !"); setTimeout(() => location.reload(), 1000);
-            } catch(err) { showToast("Erreur", true); }
-        };
-        reader.readAsText(file);
-    }
-
-    function clearData() {
-        if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); }
-    }
+    function deleteSession(index) { if(confirm("Supprimer ?")) { let h = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'); h.splice(index, 1); localStorage.setItem('gym_tracker_data_v2', JSON.stringify(h)); renderHistory(); renderStats(); renderVolumeChart(); } }
+    function exportData() { const data = { history: JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'), water: JSON.parse(localStorage.getItem('gym_tracker_water') || '[]'), settings: appSettings }; const blob = new Blob([JSON.stringify(data)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gym_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+    function importData(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { try { const data = JSON.parse(e.target.result); if(data.history) localStorage.setItem('gym_tracker_data_v2', JSON.stringify(data.history)); if(data.water) localStorage.setItem('gym_tracker_water', JSON.stringify(data.water)); if(data.settings) { localStorage.setItem('gym_tracker_settings', JSON.stringify(data.settings)); loadSettings(); } showToast("Succès !"); setTimeout(() => location.reload(), 1000); } catch(err) { showToast("Erreur", true); } }; reader.readAsText(file); }
+    function clearData() { if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
