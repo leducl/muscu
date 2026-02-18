@@ -64,7 +64,7 @@
         }
 
         /* --- INPUTS & BOUTONS --- */
-        .input-dark { 
+		.input-dark { 
             background-color: rgba(0,0,0,0.2); 
             border: 1px solid rgba(255,255,255,0.1); 
             color: var(--text-main); 
@@ -73,7 +73,13 @@
             width: 100%; 
             font-weight: 600; 
             transition: all 0.2s;
+            
+            /* --- CORRECTIFS AJOUTÉS --- */
+            box-sizing: border-box; /* Inclut le padding dans les 100% de largeur */
+            -webkit-appearance: none; /* Retire le style natif iOS */
+            appearance: none;
         }
+		
         .input-dark:focus { 
             border-color: var(--primary); 
             outline: none; 
