@@ -3,61 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gym & Run Coach V9</title>
+    <title>Gym & Run Tracker</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        'primary-hover': 'var(--primary-hover)',
+                        'primary-light': 'var(--primary-light)',
+                        'bg-body': 'var(--bg-body)',
+                        'bg-card': 'var(--bg-card)',
+                        'text-main': 'var(--text-main)',
+                        'text-muted': 'var(--text-muted)'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* --- VARIABLES DE THEME (Modifiables par JS) --- */
+        /* --- VARIABLES CSS DYNAMIQUES (THEME) --- */
         :root {
-            --primary: #3b82f6;       /* Blue-500 */
-            --primary-dark: #1d4ed8;  /* Blue-700 */
-            --primary-light: #60a5fa; /* Blue-400 */
-            --bg-card: #1e293b;
-            --text-main: #e2e8f0;
+            /* Couleurs par défaut (Bleu) - Seront écrasées par le JS */
+            --primary: #3b82f6;       
+            --primary-hover: #2563eb;
+            --primary-light: #60a5fa; 
+            
+            /* Fond par défaut (Slate) */
+            --bg-body: #0f172a;       
+            --bg-card: #1e293b;       
+            
+            /* Textes */
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
         }
 
-        /* BASE */
-        body { background-color: #0f172a; color: var(--text-main); font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 130px; -webkit-tap-highlight-color: transparent; }
+        /* --- STYLES GLOBAUX --- */
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            padding-bottom: 130px; 
+            transition: background-color 0.3s ease, color 0.3s ease; 
+            -webkit-tap-highlight-color: transparent;
+        }
         
-        /* COMPONENTS DYNAMIQUES */
-        .card { background-color: var(--bg-card); border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); border: 1px solid #334155; }
+        .card { 
+            background-color: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 1.25rem; 
+            margin-bottom: 1rem; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, border-color 0.3s; 
+        }
+
+        /* --- INPUTS & BOUTONS --- */
+        .input-dark { 
+            background-color: rgba(0,0,0,0.2); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: var(--text-main); 
+            padding: 0.8rem; 
+            border-radius: 12px; 
+            width: 100%; 
+            font-weight: 600; 
+            transition: all 0.2s;
+        }
+        .input-dark:focus { 
+            border-color: var(--primary); 
+            outline: none; 
+            background-color: rgba(0,0,0,0.4); 
+        }
         
-        .input-dark { background-color: #0f172a; border: 1px solid #334155; color: white; padding: 0.8rem; border-radius: 12px; width: 100%; transition: 0.2s; font-size: 16px; font-weight: 600; }
-        .input-dark:focus { border-color: var(--primary); outline: none; background-color: #172033; }
+        .btn-primary { 
+            background: var(--primary); 
+            color: white; 
+            padding: 1rem; 
+            border-radius: 14px; 
+            font-weight: bold; 
+            width: 100%; 
+            text-align: center; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px -3px var(--primary); /* Lueur dynamique */
+            transition: all 0.2s; 
+        }
+        .btn-primary:active { transform: scale(0.98); filter: brightness(0.9); }
         
-        .btn-primary { background: var(--primary); color: white; padding: 1rem; border-radius: 14px; font-weight: bold; width: 100%; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0, 0.3); transition: transform 0.1s; }
-        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary { 
+            background-color: rgba(255,255,255,0.05); 
+            color: var(--text-main); 
+            padding: 0.8rem; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            width: 100%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            font-weight: 500; 
+            transition: background 0.2s;
+        }
+        .btn-secondary:active { background-color: rgba(255,255,255,0.1); }
         
-        .btn-secondary { background-color: #334155; color: white; padding: 0.8rem; border-radius: 12px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; transition: background 0.2s; }
-        .btn-secondary:active { background-color: #475569; }
+        /* --- ELEMENTS SPECIFIQUES --- */
+        .nav-item.active { color: var(--primary-light); }
+        .nav-item.active i { 
+            transform: translateY(-2px); 
+            color: var(--primary); 
+            filter: drop-shadow(0 0 8px var(--primary)); /* Lueur icone */
+        }
         
         .timer-btn { background-color: rgba(255,255,255, 0.05); border: 1px solid var(--primary); color: var(--primary-light); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; }
         .timer-btn.active { background-color: #ea580c; border-color: #ea580c; color: white; animation: pulse 1.5s infinite; }
         
-        .calc-btn { position: absolute; right: 12px; top: 40px; color: #94a3b8; padding: 4px; cursor: pointer; z-index: 10; }
-        
-        /* HISTORIQUE */
-        .clickable-history { cursor: pointer; border-radius: 6px; padding: 4px 8px; margin-right: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; border: 1px solid transparent; font-weight: 600; white-space: nowrap; }
-        .clickable-history.last { background-color: rgba(255,255,255,0.05); color: var(--primary-light); border-color: var(--primary); }
-        .clickable-history.best { background-color: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.3); }
-        .clickable-history.coach { background-color: rgba(168, 85, 247, 0.15); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); animation: glow 2s infinite alternate; }
+        /* Barres et Charts */
+        .water-bar-bg { width: 100%; height: 8px; background: rgba(0,0,0,0.3); border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        .water-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s; box-shadow: 0 0 10px var(--primary); }
+        .chart-bar { background: linear-gradient(to top, var(--primary), var(--primary-light)); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: height 0.5s ease; }
 
-        /* NAVBAR */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(30, 41, 59, 0.95); border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 12px 0 24px 0; z-index: 50; backdrop-filter: blur(12px); }
+        /* --- NAVIGATION & MODALES --- */
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(15, 23, 42, 0.85); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-around; padding: 12px 0 24px 0; z-index: 50; backdrop-filter: blur(12px); }
         .nav-item { color: #64748b; text-align: center; flex: 1; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item i { width: 24px; height: 24px; transition: 0.2s; }
         .nav-item span { font-size: 10px; font-weight: 600; }
-        .nav-item.active { color: var(--primary-light); }
-        .nav-item.active i { transform: translateY(-2px); color: var(--primary); }
 
-        /* PAGES LOGIC */
-        .page-view { display: none; opacity: 0; animation: fadeIn 0.2s forwards; }
+        .page-view { display: none; opacity: 0; animation: fadeIn 0.3s forwards; }
         .page-view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes glow { from { box-shadow: 0 0 5px rgba(168, 85, 247, 0.1); } to { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MODAL & TOAST */
-        #calc-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        #calc-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .plate { display: inline-block; width: 45px; height: 45px; line-height: 41px; text-align: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin: 3px; color: #1e293b; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .plate-20 { background-color: #2563eb; color: white; width: 55px; height: 55px; line-height: 51px; } 
         .plate-15 { background-color: #eab308; } .plate-10 { background-color: #16a34a; color: white; } 
@@ -65,46 +144,58 @@
         .plate-2-5 { background-color: #1e293b; color: white; border-color: white; width: 32px; height: 32px; line-height: 28px; } 
         .plate-1-25 { background-color: #cbd5e1; width: 28px; height: 28px; line-height: 24px; font-size: 9px; }
 
-        #toast { visibility: hidden; min-width: 250px; background-color: #10b981; color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 60; left: 50%; bottom: 100px; transform: translateX(-50%); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); opacity: 0; transition: all 0.3s; font-weight: bold; }
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--primary); color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 60; left: 50%; bottom: 100px; transform: translateX(-50%); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5); opacity: 0; transition: all 0.3s; font-weight: bold; }
         #toast.show { visibility: visible; opacity: 1; bottom: 110px; }
-        
-        /* GRAPHIQUE */
-        .chart-container { height: 150px; width: 100%; display: flex; align-items: flex-end; gap: 8px; padding-top: 20px; }
-        .chart-bar { flex: 1; background: linear-gradient(to top, var(--primary), var(--primary-light)); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: height 0.5s ease; }
-        .chart-bar span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #94a3b8; width: 100%; text-align: center; }
-        
-        /* NUTRITION & SETTINGS */
-        .meal-card { border-left: 4px solid transparent; }
-        .meal-card.today { border-color: var(--primary); background-color: rgba(30, 41, 59, 0.8); box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
-        .meal-tag { font-size: 10px; text-transform: uppercase; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-        .tag-muscu { background-color: #1e3a8a; color: #93c5fd; }
-        .tag-run { background-color: #451a03; color: #fbbf24; }
-        .tag-rest { background-color: #064e3b; color: #6ee7b7; }
-        
-        .food-item { background: #334155; padding: 8px; border-radius: 8px; font-size: 11px; color: #cbd5e1; display: flex; align-items: center; gap: 6px; }
-        .water-bar-bg { width: 100%; height: 8px; background: #334155; border-radius: 4px; margin: 10px 0; overflow: hidden; }
-        .water-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s; }
+        #toast.error { background-color: #ef4444; }
 
         /* TOGGLE SWITCH */
-        .toggle-checkbox:checked { right: 0; border-color: var(--primary); }
         .toggle-checkbox:checked + .toggle-label { background-color: var(--primary); }
         .toggle-label { width: 44px; height: 24px; position: relative; display: block; background: #334155; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        .toggle-label:after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .toggle-label:after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
         .toggle-checkbox:checked + .toggle-label:after { transform: translateX(100%); }
         .toggle-checkbox { display: none; }
-
-        select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem auto; padding-right: 2.5rem; }
+        
+        /* UTILS */
+        .clickable-history { cursor: pointer; border-radius: 6px; padding: 4px 8px; margin-right: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; border: 1px solid transparent; font-weight: 600; white-space: nowrap; }
+        .clickable-history.last { background-color: rgba(255,255,255,0.05); color: var(--primary-light); border-color: var(--primary); }
+        .clickable-history.coach { background-color: rgba(168, 85, 247, 0.15); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); animation: glow 2s infinite alternate; }
+        
+        .meal-tag { font-size: 10px; text-transform: uppercase; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .tag-muscu { background-color: #1e3a8a; color: #93c5fd; } .tag-run { background-color: #451a03; color: #fbbf24; } .tag-rest { background-color: #064e3b; color: #6ee7b7; }
+        .food-item { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; font-size: 11px; color: #cbd5e1; display: flex; align-items: center; gap: 6px; }
+        
+		select { 
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); 
+            background-repeat: no-repeat; 
+            background-position: right 1rem center; 
+            background-size: 1rem auto; 
+            padding-right: 2.5rem;
+            
+            /* --- C'EST CETTE LIGNE QUI CORRIGE LE BUG --- */
+            color-scheme: dark; 
+        }
+            
+        /* Force les couleurs des options (Backup pour certains navigateurs) */
+        select option {
+            background-color: #1e293b; /* Couleur sombre en dur (Slate-800) */
+            color: white;
+        }
+		
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(234, 88, 12, 0); } 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); } }
+        @keyframes glow { from { box-shadow: 0 0 5px rgba(168, 85, 247, 0.1); } to { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); } }
+		
+
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto">
 
     <header class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300" id="header-title">Gym & Run</h1>
-            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase" id="header-subtitle">Coach AI V9</p>
+            <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light" id="header-title">Gym & Run</h1>
+            <p class="text-[10px] text-text-muted font-bold tracking-widest uppercase" id="header-subtitle">Tracker hybride</p>
         </div>
-        <div class="bg-slate-800 p-2 rounded-full border border-slate-700 shadow-lg">
+        <div class="bg-card p-2 rounded-full border border-slate-700 shadow-lg">
             <i data-lucide="brain-circuit" class="w-5 h-5 text-purple-400"></i>
         </div>
     </header>
@@ -112,13 +203,13 @@
     <div id="view-tracker" class="page-view active">
         <div class="mb-6">
             <div class="relative">
-                <select id="day-selector" onchange="manualDayChange(this.value)" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl p-3.5 font-bold focus:outline-none focus:border-blue-500 shadow-lg appearance-none">
-                </select>
+                <select id="day-selector" onchange="manualDayChange(this.value)" class="w-full bg-card text-white border border-slate-600 rounded-xl p-3.5 font-bold focus:outline-none focus:border-primary shadow-lg appearance-none">
+				</select>
             </div>
         </div>
 
         <div class="mb-4 px-1">
-            <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1 block ml-1">Date de la séance</label>
+            <label class="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-1 block ml-1">Date de la séance</label>
             <input type="date" id="session-date" class="input-dark text-center text-slate-300 font-mono">
             <script>document.getElementById('session-date').valueAsDate = new Date();</script>
         </div>
@@ -126,55 +217,77 @@
     </div>
 
     <div id="view-history" class="page-view">
-        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-blue-400"></i> Historique</h2>
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-primary"></i> Historique</h2>
         <div id="history-list" class="space-y-3 pb-4"></div>
     </div>
 
-    <div id="view-stats" class="page-view">
-        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-5 h-5 text-blue-400"></i> Performance</h2>
-        <div class="grid grid-cols-2 gap-3 mb-6" id="weekly-stats"></div>
-        <div class="card bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-            <h3 class="text-xs text-slate-400 uppercase font-bold mb-1">Volume Muscu (kg)</h3>
-            <div id="volume-chart" class="chart-container"></div>
-            <div class="flex justify-between text-[10px] text-slate-500 mt-2 px-1"><span>S-3</span><span>S-2</span><span>S-1</span><span>Actuel</span></div>
-        </div>
+	<div id="view-stats" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-5 h-5 text-primary"></i> Performance
+        </h2>
+        <div id="stats-container" class="space-y-4 pb-8"></div>
     </div>
 
     <div id="view-nutrition" class="page-view">
-        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="utensils" class="w-5 h-5 text-blue-400"></i> Coach Nutrition</h2>
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="utensils" class="w-5 h-5 text-primary"></i> Coach Nutrition</h2>
         
-        <div class="card bg-slate-800/50 border-slate-700 mb-6 relative overflow-hidden">
+        <div class="card relative overflow-hidden">
             <div class="relative z-10">
                 <div class="flex justify-between items-end mb-2">
                     <div>
-                        <h3 class="font-bold text-blue-100 flex items-center gap-2"><i data-lucide="glass-water" class="w-4 h-4"></i> Hydratation</h3>
-                        <p class="text-xs text-blue-300" id="water-text">0 / 2500 ml</p>
+                        <h3 class="font-bold text-white flex items-center gap-2">
+                            <i data-lucide="glass-water" class="w-4 h-4 text-primary-light"></i> Hydratation
+                        </h3>
+                        <p class="text-xs text-primary-light" id="water-text">0 / 2500 ml</p>
                     </div>
-                    <button onclick="addWater()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors">+ 250ml</button>
+                    <button onclick="updateWater(-250)" class="text-text-muted hover:text-red-400 transition-colors p-2" title="Enlever 250ml">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
                 </div>
+                
                 <div class="water-bar-bg"><div id="water-bar" class="water-bar-fill"></div></div>
+
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <button onclick="updateWater(100)" class="bg-slate-700/50 hover:bg-slate-600 border border-slate-600 text-slate-200 py-2 rounded-lg text-xs font-bold transition-colors">
+                        + 100ml
+                    </button>
+                    <button onclick="updateWater(250)" class="bg-primary hover:bg-primary-hover text-white py-2 rounded-lg text-xs font-bold transition-colors shadow-lg">
+                        + 250ml
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="card bg-slate-800 border-slate-700 mb-6">
+        <div class="card mb-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-white text-sm">Eau : 7 Derniers jours</h3>
-                <span class="text-xs text-blue-300 font-bold bg-blue-900/30 px-2 py-1 rounded" id="water-avg">Moy: 0L</span>
+                <span class="text-xs text-primary font-bold bg-slate-900/30 px-2 py-1 rounded" id="water-avg">Moy: 0L</span>
             </div>
             <div id="water-chart" class="h-32 w-full flex items-end justify-between gap-1 px-1"></div>
         </div>
 
         <div id="nutrition-list" class="space-y-3 mb-8"></div>
 
-        <h3 class="text-md font-bold text-white mb-3 mt-8 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> Guide des Aliments</h3>
-        <div class="grid grid-cols-2 gap-3">
+        <h3 class="text-md font-bold text-white mb-3 mt-8 flex items-center gap-2">
+            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> Guide Macro-Nutriments
+        </h3>
+        
+        <div class="grid grid-cols-2 gap-3 pb-8">
             <div class="card p-3 !mb-0 border-orange-500/30">
-                <h4 class="text-xs font-bold text-orange-300 mb-2 uppercase">⚡ Glucides</h4>
-                <div class="space-y-1"><div class="food-item">🍚 Riz Basmati</div><div class="food-item">🥣 Avoine</div><div class="food-item">🍠 Patate Douce</div></div>
+                <h4 class="text-xs font-bold text-orange-300 mb-2 uppercase flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3"></i> Glucides</h4>
+                <div class="space-y-1"><div class="food-item">🥣 Avoine / Sarrasin</div><div class="food-item">🍚 Riz Basmati</div><div class="food-item">🍠 Patate Douce</div></div>
             </div>
             <div class="card p-3 !mb-0 border-blue-500/30">
-                <h4 class="text-xs font-bold text-blue-300 mb-2 uppercase">🥩 Protéines</h4>
-                <div class="space-y-1"><div class="food-item">🍗 Poulet</div><div class="food-item">🥚 Œufs</div><div class="food-item">🐟 Poisson</div></div>
+                <h4 class="text-xs font-bold text-blue-300 mb-2 uppercase flex items-center gap-1"><i data-lucide="dumbbell" class="w-3 h-3"></i> Protéines</h4>
+                <div class="space-y-1"><div class="food-item">🍗 Poulet / Dinde</div><div class="food-item">🥚 Œufs</div><div class="food-item">🐟 Poisson</div></div>
+            </div>
+            <div class="card p-3 !mb-0 border-yellow-500/30">
+                <h4 class="text-xs font-bold text-yellow-300 mb-2 uppercase flex items-center gap-1"><i data-lucide="droplet" class="w-3 h-3"></i> Lipides</h4>
+                <div class="space-y-1"><div class="food-item">🥑 Avocat</div><div class="food-item">🫒 Huile d'Olive</div><div class="food-item">🥜 Noix</div></div>
+            </div>
+            <div class="card p-3 !mb-0 border-emerald-500/30">
+                <h4 class="text-xs font-bold text-emerald-300 mb-2 uppercase flex items-center gap-1"><i data-lucide="carrot" class="w-3 h-3"></i> Fibres</h4>
+                <div class="space-y-1"><div class="food-item">🥦 Brocoli</div><div class="food-item">🥗 Épinards</div> <div class="food-item">🌰 Amandes</div></div>
             </div>
         </div>
     </div>
@@ -185,95 +298,170 @@
         <div class="card border-l-4 border-l-purple-500">
             <h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="user-circle" class="w-5 h-5 text-purple-400"></i> Profil & Biométrie</h3>
             <div class="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                    <label class="text-[10px] text-slate-400 uppercase font-bold">Taille (cm)</label>
-                    <input type="number" id="user-height" class="input-dark" placeholder="175" onchange="saveSettings()">
-                </div>
-                <div>
-                    <label class="text-[10px] text-slate-400 uppercase font-bold">Age</label>
-                    <input type="number" id="user-age" class="input-dark" placeholder="25" onchange="saveSettings()">
-                </div>
+                <div><label class="text-[10px] text-text-muted uppercase font-bold">Taille (cm)</label><input type="number" id="user-height" class="input-dark" placeholder="175" onchange="saveSettings()"></div>
+                <div><label class="text-[10px] text-text-muted uppercase font-bold">Age</label><input type="number" id="user-age" class="input-dark" placeholder="25" onchange="saveSettings()"></div>
             </div>
-            
             <div class="mb-4">
-                <div class="flex justify-between items-center mb-1">
-                    <label class="text-[10px] text-slate-400 uppercase font-bold">Objectif Poids (kg)</label>
-                    <span id="weight-progress-txt" class="text-xs text-purple-300">--</span>
-                </div>
+                <div class="flex justify-between items-center mb-1"><label class="text-[10px] text-text-muted uppercase font-bold">Objectif Poids (kg)</label></div>
                 <input type="number" step="0.1" id="user-target-weight" class="input-dark" placeholder="75.0" onchange="saveSettings()">
-                <div class="w-full bg-slate-900 rounded-full h-2 mt-2 overflow-hidden">
-                    <div id="weight-progress-bar" class="bg-purple-500 h-2 rounded-full" style="width: 0%"></div>
-                </div>
             </div>
-
-            <div id="bio-stats" class="bg-slate-800/80 p-3 rounded-lg text-center text-xs text-slate-300 border border-slate-700">
-                Remplis tes infos pour voir ton IMC et Besoins.
-            </div>
+            <div id="bio-stats" class="bg-slate-900/50 p-3 rounded-lg text-center text-xs text-slate-300 border border-slate-700">Remplis tes infos.</div>
         </div>
 
         <div class="card">
-            <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5 text-blue-400"></i> Préférences</h3>
-            
+            <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5 text-primary"></i> Préférences</h3>
             <div class="flex justify-between items-center mb-4">
                 <span class="text-sm text-slate-300 font-medium">Sons (Timer)</span>
-                <div>
-                    <input type="checkbox" id="pref-sound" class="toggle-checkbox" onchange="saveSettings()" checked>
-                    <label for="pref-sound" class="toggle-label"></label>
-                </div>
+                <div><input type="checkbox" id="pref-sound" class="toggle-checkbox" onchange="saveSettings()" checked><label for="pref-sound" class="toggle-label"></label></div>
             </div>
             <div class="flex justify-between items-center mb-4">
                 <span class="text-sm text-slate-300 font-medium">Vibration Haptique</span>
-                <div>
-                    <input type="checkbox" id="pref-vibe" class="toggle-checkbox" onchange="saveSettings()" checked>
-                    <label for="pref-vibe" class="toggle-label"></label>
-                </div>
+                <div><input type="checkbox" id="pref-vibe" class="toggle-checkbox" onchange="saveSettings()" checked><label for="pref-vibe" class="toggle-label"></label></div>
             </div>
             <div class="mb-2">
-                 <div class="flex justify-between mb-1">
-                    <label class="text-[10px] text-slate-400 uppercase font-bold">Objectif Eau</label>
-                    <span class="text-xs text-blue-400 font-bold" id="water-val-disp">2500ml</span>
-                 </div>
-                 <input type="range" id="pref-water" min="1500" max="4000" step="250" class="w-full accent-blue-500" onchange="saveSettings(); document.getElementById('water-val-disp').innerText = this.value + 'ml'">
+                 <div class="flex justify-between mb-1"><label class="text-[10px] text-text-muted uppercase font-bold">Objectif Eau</label><span class="text-xs text-primary font-bold" id="water-val-disp">2500ml</span></div>
+                 <input type="range" id="pref-water" min="1500" max="4000" step="250" class="w-full accent-[var(--primary)]" onchange="saveSettings(); document.getElementById('water-val-disp').innerText = this.value + 'ml'">
             </div>
         </div>
 
         <div class="card">
-            <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 text-pink-400"></i> Thème App</h3>
-            <div class="flex gap-4 justify-center">
-                <button onclick="setTheme('blue')" class="w-10 h-10 rounded-full bg-blue-500 border-2 border-slate-600 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
-                <button onclick="setTheme('red')" class="w-10 h-10 rounded-full bg-red-500 border-2 border-slate-600 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
-                <button onclick="setTheme('green')" class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-slate-600 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+            <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 text-primary-light"></i> Apparence</h3>
+            
+            <label class="text-[10px] text-text-muted uppercase font-bold mb-2 block">Couleur Principale</label>
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button onclick="setAppTheme('blue')" class="w-8 h-8 rounded-full bg-blue-500 ring-2 ring-offset-2 ring-offset-[#1e293b] ring-transparent hover:ring-white transition-all focus:ring-white"></button>
+                <button onclick="setAppTheme('purple')" class="w-8 h-8 rounded-full bg-purple-500 ring-2 ring-offset-2 ring-offset-[#1e293b] ring-transparent hover:ring-white transition-all focus:ring-white"></button>
+                <button onclick="setAppTheme('emerald')" class="w-8 h-8 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-[#1e293b] ring-transparent hover:ring-white transition-all focus:ring-white"></button>
+                <button onclick="setAppTheme('orange')" class="w-8 h-8 rounded-full bg-orange-500 ring-2 ring-offset-2 ring-offset-[#1e293b] ring-transparent hover:ring-white transition-all focus:ring-white"></button>
+                <button onclick="setAppTheme('pink')" class="w-8 h-8 rounded-full bg-pink-500 ring-2 ring-offset-2 ring-offset-[#1e293b] ring-transparent hover:ring-white transition-all focus:ring-white"></button>
+                <button onclick="setAppTheme('cyan')" class="w-8 h-8 rounded-full bg-cyan-400 ring-2 ring-offset-2 ring-offset-[#1e293b] ring-transparent hover:ring-white transition-all focus:ring-white"></button>
+            </div>
+
+            <label class="text-[10px] text-text-muted uppercase font-bold mb-2 block">Ambiance de fond</label>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="setAppBg('slate')" class="bg-[#0f172a] border border-slate-600 text-xs text-slate-300 py-2 rounded-lg hover:border-white transition-colors">Défaut</button>
+                <button onclick="setAppBg('deep')" class="bg-[#000000] border border-slate-800 text-xs text-slate-400 py-2 rounded-lg hover:border-white transition-colors">AMOLED</button>
+                <button onclick="setAppBg('midnight')" class="bg-[#1e1b4b] border border-indigo-900 text-xs text-indigo-300 py-2 rounded-lg hover:border-white transition-colors">Midnight</button>
             </div>
         </div>
 
+		<div class="card border-slate-700">
+			<h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="list" class="w-5 h-5 text-text-muted"></i> Programme</h3>
+			<button onclick="switchTab('editor', document.querySelector('.nav-item.active'))" class="btn-secondary text-xs mb-2">
+				<i data-lucide="edit" class="w-3 h-3"></i> Modifier la Semaine
+			</button>
+		</div>
+
         <div class="card border-slate-700">
-            <h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="hard-drive" class="w-5 h-5 text-slate-400"></i> Données</h3>
+            <h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="hard-drive" class="w-5 h-5 text-text-muted"></i> Données</h3>
             <div class="grid grid-cols-2 gap-3 mb-3">
                 <button onclick="exportData()" class="btn-secondary text-xs"><i data-lucide="download" class="w-3 h-3"></i> Sauvegarder</button>
                 <button onclick="document.getElementById('import-file').click()" class="btn-secondary text-xs"><i data-lucide="upload" class="w-3 h-3"></i> Restaurer</button>
             </div>
-            <button onclick="clearData()" class="w-full py-3 text-red-400 text-xs font-bold border border-red-900/50 rounded-lg hover:bg-red-900/20">Réinitialisation Usine</button>
+			
+			<button onclick="clearData()" class="w-full py-3 text-red-400 text-xs font-bold border border-red-900/50 rounded-lg hover:bg-red-900/20">Réinitialisation Usine</button>
             <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(this)">
         </div>
 
-        <div class="text-center text-[10px] text-slate-600 mt-6 pb-4">
-            <p>Gym & Run Coach v9.0</p>
-            <a href="mailto:support@gymrun.app" class="underline hover:text-slate-400">Signaler un bug</a>
+        <div class="text-center text-[10px] text-text-muted mt-6 pb-4">
+            <p>Gym & Run Tracker v1.9.2</p>
+			<p>Made by Léo L.</p>
         </div>
     </div>
+		
+		
+	<div id="view-editor" class="page-view">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <i data-lucide="edit-3" class="w-5 h-5 text-primary"></i> Éditeur de Programme
+        </h2>
 
-    <nav class="navbar">
-        <div class="nav-item active" onclick="switchTab('tracker', this)"><i data-lucide="dumbbell"></i><span>Séance</span></div>
-        <div class="nav-item" onclick="switchTab('history', this)"><i data-lucide="calendar-days"></i><span>Journal</span></div>
-        <div class="nav-item" onclick="switchTab('stats', this)"><i data-lucide="bar-chart-2"></i><span>Stats</span></div>
-        <div class="nav-item" onclick="switchTab('nutrition', this)"><i data-lucide="utensils"></i><span>Nutri</span></div>
-        <div class="nav-item" onclick="switchTab('settings', this)"><i data-lucide="settings"></i><span>Outils</span></div>
-    </nav>
+        <div class="mb-6">
+            <label class="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-2 block ml-1">Jour à modifier</label>
+            <div class="relative">
+                <select id="edit-day-selector" onchange="loadDayEditor(this.value)" class="w-full bg-card text-white border border-slate-600 rounded-xl p-3.5 font-bold focus:outline-none focus:border-primary shadow-lg appearance-none">
+                    </select>
+            </div>
+        </div>
 
+        <div id="editor-content" class="space-y-4">
+            </div>
+        
+		<div class="card border-t-4 border-t-indigo-500 mt-6 pt-4">
+            <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="archive" class="w-5 h-5 text-indigo-400"></i> Bibliothèque & Partage
+            </h3>
+			
+			<div class="bg-slate-800 p-4 rounded-xl border border-dashed border-slate-600 mb-6">
+				<h4 class="text-xs font-bold text-indigo-300 uppercase mb-2 flex items-center gap-2">
+					<i data-lucide="bot" class="w-4 h-4"></i> Générer avec l'IA
+				</h4>
+				<p class="text-[10px] text-slate-400 mb-3">
+					Copiez notre modèle de demande, complétez-le avec vos objectifs et envoyez-le à ChatGPT/Gemini pour obtenir un fichier JSON compatible.
+				</p>
+				<button onclick="copyAiPrompt()" class="w-full py-2 bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-200 text-xs font-bold rounded-lg border border-indigo-500/50 transition-colors flex justify-center items-center gap-2">
+					<i data-lucide="copy" class="w-3 h-3"></i> Copier le Prompt Modèle
+				</button>
+			</div>
+
+			
+            <label class="text-[10px] text-text-muted uppercase font-bold mb-2 block">Fichier externe (.json)</label>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="exportProgramJSON()" class="btn-secondary text-xs border border-indigo-500/30">
+                    <i data-lucide="download" class="w-3 h-3"></i> Exporter
+                </button>
+                <button onclick="document.getElementById('import-prog-file').click()" class="btn-secondary text-xs border border-indigo-500/30">
+                    <i data-lucide="upload" class="w-3 h-3"></i> Importer
+                </button>
+                <input type="file" id="import-prog-file" class="hidden" accept=".json" onchange="importProgramJSON(this)">
+            </div>
+
+            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50">
+                <label class="text-[10px] text-text-muted uppercase font-bold mb-2 block">Mes Programmes Sauvegardés</label>
+                
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="prog-save-name" class="input-dark text-xs" placeholder="Nom (ex: PPL Force)">
+                    <button onclick="saveProgramToLibrary()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 rounded-lg text-xs font-bold transition-colors shadow-lg shadow-indigo-900/20" title="Sauvegarder">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="relative w-full">
+                        <select id="library-selector" class="w-full bg-slate-800 text-white border border-slate-600 rounded-lg p-2.5 text-xs font-bold focus:outline-none appearance-none">
+                            <option value="">-- Choisir un programme --</option>
+                        </select>
+                    </div>
+                    <button onclick="loadProgramFromLibrary()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 rounded-lg transition-colors border border-emerald-500" title="Charger ce programme">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="deleteProgramFromLibrary()" class="bg-red-900/50 hover:bg-red-900 text-red-200 px-3 rounded-lg border border-red-800 transition-colors" title="Supprimer">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+		
+		
+        <div class="mt-8 flex gap-3">
+             <button onclick="saveCustomProgram()" class="btn-primary shadow-xl">Sauvegarder Tout</button>
+             <button onclick="resetProgram()" class="btn-secondary text-red-400 border border-red-900/30">Rétablir Défaut</button>
+        </div>
+    </div>
+	
+	<footer style = "padding-top: 80px">
+		<nav class="navbar">
+			<div class="nav-item active" onclick="switchTab('tracker', this)"><i data-lucide="dumbbell"></i><span>Séance</span></div>
+			<div class="nav-item" onclick="switchTab('history', this)"><i data-lucide="calendar-days"></i><span>Journal</span></div>
+			<div class="nav-item" onclick="switchTab('stats', this)"><i data-lucide="bar-chart-2"></i><span>Stats</span></div>
+			<div class="nav-item" onclick="switchTab('nutrition', this)"><i data-lucide="utensils"></i><span>Nutri</span></div>
+			<div class="nav-item" onclick="switchTab('settings', this)"><i data-lucide="settings"></i><span>Outils</span></div>
+		</nav>
+	</footer>
+	
     <div id="calc-modal" onclick="closeCalc()">
         <div class="bg-slate-900 p-6 rounded-2xl w-80 text-center border border-slate-700 shadow-2xl transform scale-100" onclick="event.stopPropagation()">
             <h3 class="text-xl font-bold text-white mb-2">Charger la Barre</h3>
-            <p class="text-slate-400 text-sm mb-4">Objectif : <span id="calc-target" class="text-blue-400 font-bold text-lg">0</span> kg</p>
+            <p class="text-slate-400 text-sm mb-4">Objectif : <span id="calc-target" class="text-primary font-bold text-lg">0</span> kg</p>
             <div id="calc-result" class="bg-slate-800 p-4 rounded-xl mb-4 min-h-[80px] flex flex-wrap justify-center items-center gap-1"></div>
             <div class="text-xs text-slate-500 mb-4">Barre olympique standard (20kg)</div>
             <button onclick="closeCalc()" class="btn-primary">Fermer</button>
@@ -284,16 +472,33 @@
     <audio id="timer-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
 <script>
-    // --- 1. SETTINGS & THEME LOGIC (NEW) ---
+    // --- 1. SETTINGS & THEME LOGIC (AVANCÉ) ---
+    const THEMES = {
+        blue:   { main: '#3b82f6', hover: '#2563eb', light: '#60a5fa' },
+        purple: { main: '#8b5cf6', hover: '#7c3aed', light: '#a78bfa' },
+        emerald:{ main: '#10b981', hover: '#059669', light: '#34d399' },
+        orange: { main: '#f97316', hover: '#ea580c', light: '#fb923c' },
+        pink:   { main: '#ec4899', hover: '#db2777', light: '#f472b6' },
+        cyan:   { main: '#06b6d4', hover: '#0891b2', light: '#22d3ee' }
+    };
+
+    const BACKGROUNDS = {
+        slate:    { body: '#0f172a', card: '#1e293b' }, // Default
+        deep:     { body: '#000000', card: '#121212' }, // AMOLED
+        midnight: { body: '#0f1021', card: '#1a1b35' }  // Deep Blue
+    };
+
     let appSettings = {
-        height: null, age: null, targetWeight: null, waterGoal: 2500, sound: true, vibe: true, theme: 'blue'
+        height: null, age: null, targetWeight: null, waterGoal: 2500, 
+        sound: true, vibe: true, 
+        themeColor: 'blue', themeBg: 'slate'
     };
 
     function loadSettings() {
         const saved = localStorage.getItem('gym_tracker_settings');
-        if(saved) appSettings = JSON.parse(saved);
+        if(saved) appSettings = { ...appSettings, ...JSON.parse(saved) };
         
-        // Apply to UI
+        // UI Defaults
         document.getElementById('user-height').value = appSettings.height || '';
         document.getElementById('user-age').value = appSettings.age || '';
         document.getElementById('user-target-weight').value = appSettings.targetWeight || '';
@@ -302,8 +507,29 @@
         document.getElementById('pref-water').value = appSettings.waterGoal;
         document.getElementById('water-val-disp').innerText = appSettings.waterGoal + 'ml';
         
-        setTheme(appSettings.theme, false); // false = no save (already loaded)
+        // Appliquer Thème
+        setAppTheme(appSettings.themeColor, false);
+        setAppBg(appSettings.themeBg, false);
         calcBio();
+    }
+
+    function setAppTheme(colorKey, save = true) {
+        if (!THEMES[colorKey]) colorKey = 'blue';
+        const t = THEMES[colorKey];
+        const root = document.documentElement;
+        root.style.setProperty('--primary', t.main);
+        root.style.setProperty('--primary-hover', t.hover);
+        root.style.setProperty('--primary-light', t.light);
+        if(save) { appSettings.themeColor = colorKey; saveSettings(); }
+    }
+
+    function setAppBg(bgKey, save = true) {
+        if (!BACKGROUNDS[bgKey]) bgKey = 'slate';
+        const b = BACKGROUNDS[bgKey];
+        const root = document.documentElement;
+        root.style.setProperty('--bg-body', b.body);
+        root.style.setProperty('--bg-card', b.card);
+        if(save) { appSettings.themeBg = bgKey; saveSettings(); }
     }
 
     function saveSettings() {
@@ -313,249 +539,183 @@
         appSettings.sound = document.getElementById('pref-sound').checked;
         appSettings.vibe = document.getElementById('pref-vibe').checked;
         appSettings.waterGoal = parseInt(document.getElementById('pref-water').value);
-        
         localStorage.setItem('gym_tracker_settings', JSON.stringify(appSettings));
-        calcBio();
-        updateWaterDisplay(); // Refresh water goal if changed
+        calcBio(); updateWaterDisplay();
     }
 
     function calcBio() {
-        // Besoin du poids actuel (dernier enregistré dans le tracker poids, mais on l'a retiré, 
-        // donc on va chercher le dernier poids de séance s'il existe ou juste faire avec taille/age)
-        // Pour simplifier V9 sans l'onglet Poids, on va estimer le BMR de base.
-        const h = parseInt(appSettings.height);
-        const a = parseInt(appSettings.age);
-        
+        const h = parseInt(appSettings.height); const a = parseInt(appSettings.age);
         if(h && a) {
-            // Formule simplifiée Mifflin-St Jeor (Poids moyen 75kg si inconnu)
-            const weight = 75; 
+            const weight = 75; // Poids moyen par défaut si pas de module poids
             const bmr = (10 * weight) + (6.25 * h) - (5 * a) + 5;
             const imc = (weight / ((h/100)*(h/100))).toFixed(1);
-            
-            document.getElementById('bio-stats').innerHTML = `
-                <div class="flex justify-around">
-                    <div>
-                        <div class="text-xs text-slate-400">IMC (Est.)</div>
-                        <div class="text-lg font-bold text-white">${imc}</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400">BMR (Repos)</div>
-                        <div class="text-lg font-bold text-white">${Math.round(bmr)} kcal</div>
-                    </div>
-                </div>`;
-        }
-    }
-
-    function setTheme(color, save = true) {
-        const root = document.documentElement;
-        let primary, primaryDark, primaryLight;
-
-        if(color === 'red') {
-            primary = '#ef4444'; primaryDark = '#b91c1c'; primaryLight = '#fca5a5';
-        } else if (color === 'green') {
-            primary = '#10b981'; primaryDark = '#047857'; primaryLight = '#6ee7b7';
-        } else { // Blue default
-            primary = '#3b82f6'; primaryDark = '#1d4ed8'; primaryLight = '#60a5fa';
-        }
-
-        root.style.setProperty('--primary', primary);
-        root.style.setProperty('--primary-dark', primaryDark);
-        root.style.setProperty('--primary-light', primaryLight);
-
-        if(save) {
-            appSettings.theme = color;
-            saveSettings();
+            document.getElementById('bio-stats').innerHTML = `<div class="flex justify-around"><div><div class="text-xs text-slate-400">IMC (Est.)</div><div class="text-lg font-bold text-white">${imc}</div></div><div><div class="text-xs text-slate-400">BMR (Repos)</div><div class="text-lg font-bold text-white">${Math.round(bmr)} kcal</div></div></div>`;
         }
     }
 
     // --- 2. DONNÉES DU PROGRAMME ---
-    const program = {
-        1: { type: 'muscu', title: 'Lundi : PUSH', desc: 'Pecs, Épaules, Triceps',
-            exercises: [
-                { name: 'Développé Couché', sets: 4, reps: '6-10', rest: '2-3 min' },
-                { name: 'Développé Incliné Haltères', sets: 3, reps: '8-12', rest: '2 min' },
-                { name: 'Développé Militaire', sets: 3, reps: '8-12', rest: '2 min' },
-                { name: 'Élévations Latérales', sets: 4, reps: '12-15', rest: '1m30' },
-                { name: 'Extensions Triceps Poulie', sets: 3, reps: '10-15', rest: '1m30' }
-            ]},
-        2: { type: 'cardio', title: 'Mardi : RUNNING', desc: 'Endurance Fondamentale',
-            exercises: [{ name: 'Course à pied', sets: 1, reps: '45-60 min', rest: 'N/A' }]},
-        3: { type: 'muscu', title: 'Mercredi : PULL', desc: 'Dos, Arrière épaule, Biceps',
-            exercises: [
-                { name: 'Tractions (ou Tirage vertical)', sets: 4, reps: 'Max', rest: '2-3 min' },
-                { name: 'Rowing Barre', sets: 3, reps: '8-12', rest: '2 min' },
-                { name: 'Tirage Horizontal', sets: 3, reps: '10-12', rest: '1m30' },
-                { name: 'Face Pulls', sets: 4, reps: '15-20', rest: '1m30' },
-                { name: 'Curl Barre', sets: 3, reps: '8-12', rest: '1m30' }
-            ]},
-        4: { type: 'cardio', title: 'Jeudi : RUNNING', desc: 'Endurance - Hydratation ++',
-            exercises: [{ name: 'Course à pied', sets: 1, reps: '45-60 min', rest: 'N/A' }]},
-        5: { type: 'muscu', title: 'Vendredi : UPPER BODY', desc: 'Volume & Rappel',
-            exercises: [
-                { name: 'Dips', sets: 3, reps: '8-12', rest: '2 min' },
-                { name: 'Tirage Vertical Supination', sets: 3, reps: '8-12', rest: '2 min' },
-                { name: 'Écarté Poulie Vis-à-vis', sets: 3, reps: '12-15', rest: '1m30' },
-                { name: 'Curl Marteau', sets: 3, reps: '10-15', rest: '1m30' },
-                { name: 'Extension Triceps Tête', sets: 3, reps: '10-15', rest: '1m30' }
-            ]},
-        6: { type: 'cardio', title: 'Samedi : RUNNING', desc: 'Sortie Longue / Plaisir',
-            exercises: [{ name: 'Course à pied', sets: 1, reps: 'Libre', rest: 'N/A' }]},
+// --- 2. GESTION DU PROGRAMME (DYNAMIQUE) ---
+    
+    // Programme par défaut (Backup)
+    const defaultProgram = {
+        1: { type: 'muscu', title: 'Lundi : PUSH', desc: 'Pecs, Épaules, Triceps', exercises: [{ name: 'Développé Couché', sets: 4, reps: '6-10', rest: '2-3 min' }, { name: 'Développé Incliné Haltères', sets: 3, reps: '8-12', rest: '2 min' }, { name: 'Développé Militaire', sets: 3, reps: '8-12', rest: '2 min' }, { name: 'Élévations Latérales', sets: 4, reps: '12-15', rest: '1m30' }, { name: 'Extensions Triceps Poulie', sets: 3, reps: '10-15', rest: '1m30' }]},
+        2: { type: 'cardio', title: 'Mardi : RUNNING', desc: 'Endurance Fondamentale', exercises: [{ name: 'Course à pied', sets: 1, reps: '45-60 min', rest: 'N/A' }]},
+        3: { type: 'muscu', title: 'Mercredi : PULL', desc: 'Dos, Arrière épaule, Biceps', exercises: [{ name: 'Tractions', sets: 4, reps: 'Max', rest: '2-3 min' }, { name: 'Rowing Barre', sets: 3, reps: '8-12', rest: '2 min' }, { name: 'Tirage Horizontal', sets: 3, reps: '10-12', rest: '1m30' }, { name: 'Face Pulls', sets: 4, reps: '15-20', rest: '1m30' }, { name: 'Curl Barre', sets: 3, reps: '8-12', rest: '1m30' }]},
+        4: { type: 'cardio', title: 'Jeudi : RUNNING', desc: 'Endurance - Hydratation ++', exercises: [{ name: 'Course à pied', sets: 1, reps: '45-60 min', rest: 'N/A' }]},
+        5: { type: 'muscu', title: 'Vendredi : UPPER BODY', desc: 'Volume & Rappel', exercises: [{ name: 'Dips', sets: 3, reps: '8-12', rest: '2 min' }, { name: 'Tirage Vertical Supination', sets: 3, reps: '8-12', rest: '2 min' }, { name: 'Écarté Poulie Vis-à-vis', sets: 3, reps: '12-15', rest: '1m30' }, { name: 'Curl Marteau', sets: 3, reps: '10-15', rest: '1m30' }, { name: 'Extension Triceps Tête', sets: 3, reps: '10-15', rest: '1m30' }]},
+        6: { type: 'cardio', title: 'Samedi : RUNNING', desc: 'Sortie Longue / Plaisir', exercises: [{ name: 'Course à pied', sets: 1, reps: 'Libre', rest: 'N/A' }]},
         0: { type: 'rest', title: 'Dimanche : REPOS', desc: 'Récupération - Low Carb', exercises: [] }
     };
 
-    // --- 3. INITIALISATION ---
+    // Variable globale qui contiendra le programme actif
+    let activeProgram = {};
+
+    function loadProgram() {
+        const saved = localStorage.getItem('gym_tracker_program');
+        if (saved) {
+            activeProgram = JSON.parse(saved);
+        } else {
+            activeProgram = JSON.parse(JSON.stringify(defaultProgram)); // Clone profond
+        }
+    }
+
+    // Charge le programme au démarrage
+    loadProgram();
+
+    // --- 3. INIT & NAVIGATION ---
     const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
     let currentDayIndex = new Date().getDay();
-
     const selector = document.getElementById('day-selector');
     days.forEach((day, index) => {
-        let option = document.createElement('option');
-        option.value = index;
-        option.text = program[index].title;
-        if(index === currentDayIndex) option.selected = true;
-        selector.add(option);
+        let option = document.createElement('option'); option.value = index; option.text = activeProgram[index].title;
+        if(index === currentDayIndex) option.selected = true; selector.add(option);
     });
 
     lucide.createIcons();
-    loadSettings(); // Charger settings et thème
+    loadSettings();
     loadDailyView(currentDayIndex);
 
-    // --- 4. NAVIGATION ---
-    function switchTab(tabId, element) {
+	function switchTab(tabId, element) {
         document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
-        document.getElementById('view-' + tabId).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
+        // Cas particulier pour l'éditeur qui n'est pas dans la navbar principale
+        if(tabId === 'editor') {
+            document.getElementById('view-editor').classList.add('active');
+            // Charge le jour actuel par défaut dans l'éditeur
+            document.getElementById('edit-day-selector').value = currentDayIndex;
+            loadDayEditor(currentDayIndex);
+        } else {
+            document.getElementById('view-' + tabId).classList.add('active');
+        }
+
+        // Gestion de la classe active sur la navbar (seulement si l'élément est dans la navbar)
+        if(element && element.classList.contains('nav-item')) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
         
         if(tabId === 'history') renderHistory();
-        if(tabId === 'stats') { renderStats(); renderVolumeChart(); }
+        if(tabId === 'stats') renderStats();
         if(tabId === 'nutrition') { renderNutrition(); updateWaterDisplay(); renderWaterChart(); }
         
-        const titles = { 'tracker': 'Gym & Run', 'history': 'Journal', 'stats': 'Statistiques', 'nutrition': 'Coach Nutri', 'settings': 'Outils' };
-        document.getElementById('header-title').innerText = titles[tabId];
+        const titles = { 'tracker': 'Gym & Run', 'history': 'Journal', 'stats': 'Statistiques', 'nutrition': 'Coach Nutri', 'settings': 'Outils', 'editor': 'Éditeur' };
+        document.getElementById('header-title').innerText = titles[tabId] || 'Gym & Run';
     }
 
-    function manualDayChange(val) {
-        currentDayIndex = parseInt(val);
-        loadDailyView(currentDayIndex);
-    }
+    function manualDayChange(val) { currentDayIndex = parseInt(val); loadDailyView(currentDayIndex); }
 
-    // --- 5. CORE FUNCTIONS ---
+    // --- 4. WORKOUT LOGIC ---
     function getCoachAdvice(lastData, targetRepString) {
         if(!lastData) return null;
-        let maxTarget = 12; 
-        const rangeMatch = targetRepString.match(/-(\d+)/);
-        if(rangeMatch) maxTarget = parseInt(rangeMatch[1]);
-        else if (targetRepString.includes('Max')) maxTarget = 20;
-
-        const lastWeight = parseFloat(lastData.val1.replace(',','.'));
-        const lastReps = parseInt(lastData.val2.split(',')[0]);
-
+        let maxTarget = 12; const rangeMatch = targetRepString.match(/-(\d+)/);
+        if(rangeMatch) maxTarget = parseInt(rangeMatch[1]); else if (targetRepString.includes('Max')) maxTarget = 20;
+        const lastWeight = parseFloat(lastData.val1.replace(',','.')); const lastReps = parseInt(lastData.val2.split(',')[0]);
         if(isNaN(lastWeight) || isNaN(lastReps)) return null;
-
-        if (lastReps >= maxTarget) {
-            return { type: 'weight', val1: lastWeight + 2.5, val2: targetRepString, msg: `+2.5kg !` };
-        } else {
-            return { type: 'reps', val1: lastWeight, val2: lastReps + 1, msg: `Vise ${lastReps + 1} reps` };
-        }
+        if (lastReps >= maxTarget) return { type: 'weight', val1: lastWeight + 2.5, val2: targetRepString, msg: `+2.5kg !` };
+        else return { type: 'reps', val1: lastWeight, val2: lastReps + 1, msg: `Vise ${lastReps + 1} reps` };
     }
 
     function loadDailyView(dayIndex) {
         const contentDiv = document.getElementById('app-content');
-        const dayPlan = program[dayIndex];
+        const dayPlan = activeProgram[dayIndex];
 
         if (dayPlan.type === 'rest') {
-            contentDiv.innerHTML = `
-                <div class="card text-center py-12 border-t-4 border-emerald-500 bg-gradient-to-b from-emerald-900/20 to-slate-900">
-                    <div class="bg-emerald-900/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-                        <i data-lucide="coffee" class="w-10 h-10 text-emerald-400"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-white">Repos</h2>
-                    <p class="text-slate-400 mt-2 text-sm">${dayPlan.desc}</p>
-                    <div class="mt-8 bg-slate-800/80 p-5 rounded-xl text-left text-sm border border-slate-700">
-                        <p class="text-emerald-400 font-bold mb-2 flex items-center gap-2 text-xs uppercase tracking-wide"><i data-lucide="leaf" class="w-4 h-4"></i> Nutrition</p>
-                        <p class="text-slate-300">Moins de glucides, plus de légumes et bons lipides (avocat, noix).</p>
-                    </div>
-                </div>`;
-            lucide.createIcons();
-            return;
+            // ... (Code repos inchangé, je l'abrège ici pour la clarté) ...
+            contentDiv.innerHTML = `<div class="card text-center py-12 border-t-4 border-emerald-500 bg-gradient-to-b from-emerald-900/20 to-slate-900/10"><div class="bg-emerald-900/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/30"><i data-lucide="coffee" class="w-10 h-10 text-emerald-400"></i></div><h2 class="text-2xl font-bold text-white">Repos</h2><p class="text-slate-400 mt-2 text-sm">${dayPlan.desc}</p><div class="mt-8 bg-card p-5 rounded-xl text-left text-sm border border-slate-700"><p class="text-emerald-400 font-bold mb-2 flex items-center gap-2 text-xs uppercase tracking-wide"><i data-lucide="leaf" class="w-4 h-4"></i> Nutrition</p><p class="text-slate-300">Moins de glucides, plus de légumes et bons lipides (avocat, noix).</p></div></div>`;
+            lucide.createIcons(); return;
         }
 
         const isCardio = dayPlan.type === 'cardio';
         let html = `<form id="workout-form" onsubmit="event.preventDefault();">`;
 
         dayPlan.exercises.forEach((exo, index) => {
-            const historyData = getHistoryData(exo.name);
-            const lastData = historyData.last;
+            const historyData = getHistoryData(exo.name); const lastData = historyData.last;
             
-            let historyHTML = '';
-            if (!lastData) {
-                historyHTML = `<div class="text-xs text-slate-500 mb-3 italic flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Pas d'historique</div>`;
+            // --- GESTION DE L'AFFICHAGE DU HEADER (MODIFIÉ) ---
+            let headerInfo = '';
+            if (isCardio) {
+                // Version Cardio : Affiche l'objectif (stocké dans 'reps')
+                headerInfo = `<div class="text-xs text-amber-400 mt-1 mb-2 font-bold flex items-center gap-2">
+                                <span class="bg-amber-900/30 px-2 py-1 rounded border border-amber-700/50 flex items-center gap-1">
+                                    <i data-lucide="crosshair" class="w-3 h-3"></i> ${exo.reps}
+                                </span>
+                              </div>`;
             } else {
+                // Version Muscu : Affiche Séries et Reps
+                headerInfo = `<div class="text-xs text-text-muted mt-1 mb-2 font-medium flex items-center gap-2">
+                                <span class="bg-slate-700/50 px-1.5 py-0.5 rounded text-slate-300 border border-slate-600">${exo.sets} séries</span>
+                                <span class="text-slate-600">•</span>
+                                <span>${exo.reps} reps</span>
+                              </div>`;
+            }
+
+            let historyHTML = !lastData ? `<div class="text-xs text-text-muted mb-3 italic flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Pas d'historique</div>` : '';
+            if (lastData) {
                 const lastText = isCardio ? `${lastData.val1}km / ${lastData.val2}` : `${lastData.val1}kg x ${lastData.val2}`;
                 let coachHTML = '';
                 if(!isCardio) {
                     const advice = getCoachAdvice(lastData, exo.reps);
-                    if(advice) {
-                        coachHTML = `<div onclick="fillInputs(${index}, '${advice.val1}', '${advice.val2}')" class="clickable-history coach" title="Appliquer le conseil"><i data-lucide="sparkles" class="w-3 h-3"></i> Coach: <strong>${advice.msg}</strong></div>`;
-                    }
+                    if(advice) coachHTML = `<div onclick="fillInputs(${index}, '${advice.val1}', '${advice.val2}')" class="clickable-history coach"><i data-lucide="sparkles" class="w-3 h-3"></i> Coach: <strong>${advice.msg}</strong></div>`;
                 }
-                historyHTML = `<div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar"><div onclick="fillInputs(${index}, '${lastData.val1}', '${lastData.val2}')" class="clickable-history last" title="Copier dernier"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Last: <strong>${lastText}</strong></div>${coachHTML}</div>`;
+                historyHTML = `<div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar"><div onclick="fillInputs(${index}, '${lastData.val1}', '${lastData.val2}')" class="clickable-history last"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Last: <strong>${lastText}</strong></div>${coachHTML}</div>`;
             }
 
-            let actionBtn = '';
-            if (!isCardio && exo.rest !== 'N/A') {
-                const seconds = parseRestToSeconds(exo.rest);
-                actionBtn = `<button type="button" class="timer-btn" onclick="startTimer(this, ${seconds})"><i data-lucide="timer" class="w-3 h-3"></i> ${exo.rest}</button>`;
-            }
+            let actionBtn = (!isCardio && exo.rest !== 'N/A') ? `<button type="button" class="timer-btn" onclick="startTimer(this, ${parseRestToSeconds(exo.rest)})"><i data-lucide="timer" class="w-3 h-3"></i> ${exo.rest}</button>` : '';
+            let calcBtn = (!isCardio && !exo.name.includes('Haltères') && !exo.name.includes('Poulie')) ? `<i data-lucide="scale" class="w-4 h-4 text-text-muted absolute right-3 top-3.5 cursor-pointer" onclick="openCalc(document.getElementById('val1_${index}').value)"></i>` : '';
 
-            let calcBtn = '';
-            if (!isCardio && !exo.name.includes('Haltères') && !exo.name.includes('Poulie')) {
-                calcBtn = `<i data-lucide="scale" class="w-4 h-4 calc-btn" onclick="openCalc(document.getElementById('val1_${index}').value)"></i>`;
-            }
-
+            // Labels inputs
             const label1 = isCardio ? "Distance (km)" : "Charge (kg)";
-            const place1 = isCardio ? "Ex: 8.5" : "Ex: 60";
+            const ph1 = isCardio ? "8.5" : "60";
             const label2 = isCardio ? "Temps (min)" : "Reps";
-            const place2 = isCardio ? "Ex: 45:30" : "Ex: 10,10,9";
+            const ph2 = isCardio ? "45:00" : "10,10,9";
 
             html += `
-                <div class="card relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <h3 class="font-bold text-lg text-blue-100 flex items-center gap-2 leading-tight">${exo.name}</h3>
-                            <div class="text-xs text-slate-400 mt-1 mb-2 font-medium flex items-center gap-2">
-                                <span class="bg-slate-700/50 px-1.5 py-0.5 rounded text-slate-300 border border-slate-600">${exo.sets} séries</span>
-                                <span class="text-slate-600">•</span>
-                                <span>${exo.reps} reps</span>
-                            </div>
-                        </div>
-                        ${actionBtn}
+            <div class="card relative overflow-hidden">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2 leading-tight">${exo.name}</h3>
+                        ${headerInfo}
                     </div>
-                    ${historyHTML}
-                    <div class="grid grid-cols-2 gap-3 relative">
-                        <div>
-                            <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1.5 block ml-1">${label1}</label>
-                            <div class="relative"><input type="number" id="val1_${index}" name="val1_${index}" class="input-dark font-mono text-center text-blue-100 pl-2 pr-6" placeholder="${place1}" inputmode="decimal">${calcBtn}</div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1.5 block ml-1">${label2}</label>
-                            <input type="text" id="val2_${index}" name="val2_${index}" class="input-dark font-mono text-center text-blue-100" placeholder="${place2}" inputmode="${isCardio ? 'text' : 'text'}">
-                        </div>
+                    ${actionBtn}
+                </div>
+                ${historyHTML}
+                <div class="grid grid-cols-2 gap-3 relative">
+                    <div>
+                        <label class="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-1.5 block ml-1">${label1}</label>
+                        <div class="relative"><input type="number" id="val1_${index}" name="val1_${index}" class="input-dark font-mono text-center text-white pl-2 pr-6" placeholder="${ph1}" inputmode="decimal">${calcBtn}</div>
                     </div>
-                </div>`;
+                    <div>
+                        <label class="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-1.5 block ml-1">${label2}</label>
+                        <input type="text" id="val2_${index}" name="val2_${index}" class="input-dark font-mono text-center text-white" placeholder="${ph2}" inputmode="text">
+                    </div>
+                </div>
+            </div>`;
         });
 
-        html += `
-            <div class="card"><label class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2"><i data-lucide="sticky-note" class="w-3 h-3"></i> Notes</label><textarea name="notes" class="input-dark text-sm min-h-[60px] font-normal text-slate-300" placeholder="Sensations..."></textarea></div>
-            <button type="button" onclick="saveWorkout(${dayIndex})" class="btn-primary mb-8 text-lg shadow-blue-900/20 shadow-xl">Valider la séance</button>
-            </form>`;
-
-        contentDiv.innerHTML = html;
-        lucide.createIcons();
+        html += `<div class="card"><label class="text-xs text-text-muted uppercase font-bold tracking-wider mb-2 block flex items-center gap-2"><i data-lucide="sticky-note" class="w-3 h-3"></i> Notes</label><textarea name="notes" class="input-dark text-sm min-h-[60px] font-normal text-slate-300" placeholder="Sensations..."></textarea></div><button type="button" onclick="saveWorkout(${dayIndex})" class="btn-primary mb-8 text-lg shadow-xl">Valider la séance</button></form>`;
+        contentDiv.innerHTML = html; lucide.createIcons();
     }
 
-    // --- WATER ---
+    // --- 5. WATER LOGIC ---
     function getWater() {
         const todayStr = new Date().toLocaleDateString('fr-FR');
         const data = JSON.parse(localStorage.getItem('gym_tracker_water') || '[]');
@@ -563,19 +723,19 @@
         return entry ? entry.amount : 0;
     }
 
-    function addWater() {
+    function updateWater(amount) {
         const todayStr = new Date().toLocaleDateString('fr-FR');
         let data = JSON.parse(localStorage.getItem('gym_tracker_water') || '[]');
         let index = data.findIndex(d => d.date === todayStr);
-        if(index !== -1) { data[index].amount += 250; } else { data.push({ date: todayStr, amount: 250 }); }
+        if(index !== -1) { let newAmount = data[index].amount + amount; if (newAmount < 0) newAmount = 0; data[index].amount = newAmount; } 
+        else if (amount > 0) data.push({ date: todayStr, amount: amount });
         localStorage.setItem('gym_tracker_water', JSON.stringify(data));
         updateWaterDisplay(); renderWaterChart();
         if(appSettings.vibe && navigator.vibrate) navigator.vibrate(50);
     }
 
     function updateWaterDisplay() {
-        const current = getWater();
-        const max = appSettings.waterGoal;
+        const current = getWater(); const max = appSettings.waterGoal || 2500;
         const pct = Math.min((current / max) * 100, 100);
         document.getElementById('water-text').innerText = `${current} / ${max} ml`;
         document.getElementById('water-bar').style.width = `${pct}%`;
@@ -584,9 +744,8 @@
     function renderWaterChart() {
         const container = document.getElementById('water-chart');
         const data = JSON.parse(localStorage.getItem('gym_tracker_water') || '[]');
-        const last7Days = [];
-        let totalWeek = 0;
-        
+        const last7Days = []; let totalWeek = 0; const goalScale = appSettings.waterGoal || 2500; 
+
         for (let i = 6; i >= 0; i--) {
             const d = new Date(); d.setDate(d.getDate() - i);
             const dateStr = d.toLocaleDateString('fr-FR');
@@ -595,112 +754,165 @@
             totalWeek += amount;
             last7Days.push({ day: d.toLocaleDateString('fr-FR', { weekday: 'short' }), amount: amount });
         }
-        const avg = Math.round(totalWeek / 7);
-        document.getElementById('water-avg').innerText = `Moy: ${(avg/1000).toFixed(1)}L`;
-
+        
+        document.getElementById('water-avg').innerText = `Moy: ${(Math.round(totalWeek / 7)/1000).toFixed(1)}L`;
         let html = '';
         last7Days.forEach(day => {
-            const heightPct = Math.min((day.amount / 3000) * 100, 100);
-            const colorClass = day.amount >= appSettings.waterGoal ? 'bg-blue-400' : 'bg-blue-800';
-            html += `<div class="flex flex-col items-center w-full group relative"><div class="w-full ${colorClass} rounded-t-sm transition-all duration-500 relative" style="height: ${heightPct}%"><span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] bg-slate-900 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-slate-700">${day.amount}ml</span></div><span class="text-[9px] text-slate-500 mt-1 uppercase">${day.day.replace('.','')}</span><div class="absolute bottom-[${(appSettings.waterGoal/3000)*100}%] w-full h-[1px] bg-red-500/30 z-0 pointer-events-none"></div></div>`;
+            const heightPct = Math.min((day.amount / goalScale) * 100, 100);
+            const isGoalMet = day.amount >= goalScale;
+            // Utilisation des classes dynamiques pour la couleur active
+            const colorClass = isGoalMet ? 'bg-primary shadow-[0_0_10px_var(--primary)]' : 'bg-slate-700';
+            html += `<div class="flex flex-col items-center w-full group relative h-full justify-end"><div class="w-full ${colorClass} rounded-t-sm transition-all duration-500 relative group-hover:bg-primary-light" style="height: ${heightPct}%"><span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-slate-900 text-white px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-slate-600 z-10 pointer-events-none">${day.amount}ml</span></div><span class="text-[9px] text-text-muted mt-1 uppercase font-bold">${day.day.replace('.','').substr(0,2)}</span><div class="absolute bottom-[100%] border-b border-dashed border-slate-600/50 w-[140%] -left-[20%] pointer-events-none"></div></div>`;
         });
         container.innerHTML = html;
     }
 
-    // --- RENDER NUTRITION ---
+    // --- 6. RENDER NUTRITION ---
     async function renderNutrition() {
         const list = document.getElementById('nutrition-list');
-        const today = new Date().getDay();
-        
         try {
-            // Appel du fichier externe
             const response = await fetch('nutrition.json');
-            
-            if (!response.ok) {
-                throw new Error("Impossible de charger le fichier nutrition.json");
-            }
-            
+            if (!response.ok) throw new Error("Erreur");
             const nutriPlan = await response.json();
-            let html = '';
-            
-            // On réorganise pour l'affichage (Lundi en premier)
-            // On cherche les jours dans l'ordre 1,2,3,4,5,6,0
-            const orderedDays = [1, 2, 3, 4, 5, 6, 0];
+            let html = ''; const today = new Date().getDay(); const orderedDays = [1, 2, 3, 4, 5, 6, 0];
             
             orderedDays.forEach(dayIndex => {
-                // Trouver le plan correspondant au jour
-                const item = nutriPlan.find(p => p.day === dayIndex);
-                if(!item) return;
-
+                const item = nutriPlan.find(p => p.day === dayIndex); if(!item) return;
                 const isToday = item.day === today;
-                const activeClass = isToday ? 'today' : 'opacity-70 grayscale hover:grayscale-0 transition-all';
+                // La carte active utilise bg-slate-800 avec une bordure primary
+                const activeClass = isToday ? 'border-l-4 border-l-[var(--primary)] bg-slate-800 shadow-lg' : 'opacity-70 grayscale hover:grayscale-0 transition-all';
                 const icon = item.type === 'muscu' ? 'dumbbell' : (item.type === 'run' ? 'footprints' : 'coffee');
-                
-                // Gestion des tags de couleur
-                let tag = '';
-                if (item.type === 'muscu') tag = '<span class="meal-tag tag-muscu">Force</span>';
-                else if (item.type === 'run') tag = '<span class="meal-tag tag-run">Cardio</span>';
-                else tag = '<span class="meal-tag tag-rest">Repos</span>';
-
-                // Construction de la liste des repas depuis le JSON
+                let tag = item.type === 'muscu' ? '<span class="meal-tag tag-muscu">Force</span>' : (item.type === 'run' ? '<span class="meal-tag tag-run">Cardio</span>' : '<span class="meal-tag tag-rest">Repos</span>');
                 let detailsHtml = '<ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">';
-                item.details.forEach(detail => {
-                    detailsHtml += `<li><strong>${detail.label}:</strong> ${detail.text}</li>`;
-                });
-                detailsHtml += '</ul>';
-
-                html += `
-                    <div class="card meal-card ${activeClass} mb-3" id="day-${item.day}">
-                        <div class="flex justify-between items-center mb-1">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i>
-                                <h3 class="font-bold text-white text-sm">${item.title}</h3>
-                            </div>
-                            ${tag}
-                        </div>
-                        ${detailsHtml}
-                    </div>
-                `;
+                item.details.forEach(detail => detailsHtml += `<li><strong>${detail.label}:</strong> ${detail.text}</li>`);
+                html += `<div class="card ${activeClass} mb-3" id="day-${item.day}"><div class="flex justify-between items-center mb-1"><div class="flex items-center gap-2"><i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i><h3 class="font-bold text-white text-sm">${item.title}</h3></div>${tag}</div>${detailsHtml}</ul></div>`;
             });
-
-            list.innerHTML = html;
-            lucide.createIcons();
-            
-            // Auto-scroll
-            if(document.querySelector('.today')) {
-                setTimeout(() => document.querySelector('.today').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-            }
-
-        } catch (error) {
-            console.error(error);
-            list.innerHTML = `<div class="text-red-400 text-center p-4 border border-red-900 rounded-lg bg-red-900/10">
-                <p class="font-bold">Erreur de chargement</p>
-                <p class="text-xs mt-1">Assurez-vous que le fichier <b>nutrition.json</b> est bien présent.</p>
-                <p class="text-[10px] mt-2 opacity-70">Note : Cela nécessite un serveur local (Live Server).</p>
-            </div>`;
-        }
+            list.innerHTML = html; lucide.createIcons();
+            if(document.querySelector('.border-l-[var(--primary)]')) setTimeout(() => document.querySelector('.border-l-[var(--primary)]').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        } catch (error) { list.innerHTML = `<div class="text-red-400 text-center p-4 border border-red-900 rounded-lg bg-red-900/10 text-xs">Fichier nutrition.json introuvable.</div>`; }
     }
 
-    // --- HELPERS ---
+    // --- 7. HELPERS & CHARTS ---
     function saveWorkout(dayIndex) {
         const form = document.getElementById('workout-form');
-        const dayPlan = program[dayIndex];
+        const dayPlan = activeProgram[dayIndex];
         const dateInput = document.getElementById('session-date').value;
-        let dateStr, timestamp;
-        if (dateInput) { const [y, m, d] = dateInput.split('-'); dateStr = `${d}/${m}/${y}`; timestamp = new Date(y, m - 1, d).getTime(); }
-        else { const now = new Date(); dateStr = now.toLocaleDateString('fr-FR'); timestamp = now.getTime(); }
-        
+        let dateStr, timestamp; if (dateInput) { const [y, m, d] = dateInput.split('-'); dateStr = `${d}/${m}/${y}`; timestamp = new Date(y, m - 1, d).getTime(); } else { const now = new Date(); dateStr = now.toLocaleDateString('fr-FR'); timestamp = now.getTime(); }
         let sessionData = { date: dateStr, timestamp: timestamp, title: dayPlan.title, type: dayPlan.type, notes: form.notes ? form.notes.value : "", exercises: [] };
-        dayPlan.exercises.forEach((exo, index) => {
-            const val1 = form[`val1_${index}`].value;
-            const val2 = form[`val2_${index}`].value;
-            if(val1 || val2) sessionData.exercises.push({ name: exo.name, val1: val1 || '-', val2: val2 || '-' });
-        });
+        dayPlan.exercises.forEach((exo, index) => { const val1 = form[`val1_${index}`].value; const val2 = form[`val2_${index}`].value; if(val1 || val2) sessionData.exercises.push({ name: exo.name, val1: val1 || '-', val2: val2 || '-' }); });
         if (sessionData.exercises.length === 0) { showToast("Vide !", true); return; }
         let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
         history.unshift(sessionData); history.sort((a, b) => b.timestamp - a.timestamp);
         localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
         showToast("Validé ! 🔥"); form.reset(); document.getElementById('session-date').valueAsDate = new Date(); loadDailyView(dayIndex);
+    }
+
+	function renderStats() {
+        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        const container = document.getElementById('stats-container');
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        // Initialisation des compteurs
+        const stats = {
+            month: { gymSessions: 0, runSessions: 0, runKm: 0 },
+            total: { gymSessions: 0, runSessions: 0, runKm: 0 }
+        };
+
+        history.forEach(session => {
+            const [d, m, y] = session.date.split('/').map(Number);
+            const isThisMonth = (m - 1) === currentMonth && y === currentYear;
+
+            if (session.type === 'muscu') {
+                stats.total.gymSessions++;
+                if (isThisMonth) stats.month.gymSessions++;
+            } else if (session.type === 'cardio') {
+                stats.total.runSessions++;
+                if (isThisMonth) stats.month.runSessions++;
+
+                // Calcul distance
+                session.exercises.forEach(ex => {
+                    const km = parseFloat(ex.val1.replace(',', '.'));
+                    if (!isNaN(km)) {
+                        stats.total.runKm += km;
+                        if (isThisMonth) stats.month.runKm += km;
+                    }
+                });
+            }
+        });
+
+        // --- Récupération et formatage du temps total ---
+        const totalSeconds = parseInt(localStorage.getItem('gym_tracker_time_spent') || '0');
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const timeString = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+        // Fonction utilitaire pour générer une carte
+        const statCard = (title, val1, label1, val2, label2, icon, colorClass) => `
+            <div class="card relative overflow-hidden border-l-4 ${colorClass}">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2">
+                    <i data-lucide="${icon}" class="w-4 h-4"></i> ${title}
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <div class="text-2xl font-black text-white leading-none">${val1}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">${label1}</div>
+                    </div>
+                    <div class="border-l border-slate-700 pl-4">
+                        <div class="text-2xl font-black text-white leading-none">${val2}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">${label2}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Génération du HTML
+        let html = '';
+
+        // 1. Stats du Mois en cours
+        html += statCard(
+            "Ce mois-ci", 
+            stats.month.gymSessions, "Séances Muscu", 
+            stats.month.runSessions, "Sorties Run", 
+            "calendar", "border-blue-500"
+        );
+
+        // 2. Stats Globales (TEMPS & Distance)
+        html += statCard(
+            "Cumul Global", 
+            timeString, "Temps App", // Affiche le temps ici
+            stats.total.runKm.toFixed(1), "KM Parcourus", 
+            "trophy", "border-amber-500"
+        );
+
+        // 3. Total Séances simple
+        html += `
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-card p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center py-4">
+                    <span class="text-3xl font-black text-primary">${stats.total.gymSessions + stats.total.runSessions}</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">Total Activitées</span>
+                </div>
+                 <div class="bg-card p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center py-4">
+                    <span class="text-3xl font-black text-emerald-400">${stats.total.gymSessions}</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">Dont Muscu</span>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+        lucide.createIcons();
+    }
+
+    function getHistoryData(exoName) {
+        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+        let last = null, best = null;
+        for (let session of history) {
+            const found = session.exercises.find(e => e.name === exoName || e.name.includes(exoName));
+            if (found) { if(!last) last = found; const val = parseFloat(found.val1.replace(',','.')); if (!isNaN(val) && (!best || val > parseFloat(best.val1.replace(',','.')))) best = found; }
+        }
+        return { last, best };
     }
 
     function editSessionDate(index) {
@@ -717,56 +929,39 @@
         }
     }
 
-    function renderStats() {
-        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        const statsDiv = document.getElementById('weekly-stats');
-        const now = new Date(); const todayStr = now.toLocaleDateString('fr-FR'); 
-        const curMonth = now.getMonth(); const curYear = now.getFullYear();
-        const data = { day: { gym: 0, run: 0 }, month: { gym: 0, run: 0 }, year: { gym: 0, run: 0 }, all: { gym: 0, run: 0 } };
+	function copyAiPrompt() {
+		const promptText = `Agis comme un coach sportif expert. Crée un programme d'une semaine au format JSON strict pour mon app.
+	Contraintes : [TES OBJECTIFS ICI]
 
-        history.forEach(session => {
-            const [d, m, y] = session.date.split('/').map(Number);
-            const isToday = session.date === todayStr; const isMonth = (m - 1) === curMonth && y === curYear; const isYear = y === curYear;
-            if (session.type === 'muscu') { data.all.gym++; if(isYear) data.year.gym++; if(isMonth) data.month.gym++; if(isToday) data.day.gym++; } 
-            else if (session.type === 'cardio') {
-                let km = 0; session.exercises.forEach(ex => { const val = parseFloat(ex.val1.replace(',', '.')); if (!isNaN(val)) km += val; });
-                data.all.run += km; if(isYear) data.year.run += km; if(isMonth) data.month.run += km; if(isToday) data.day.run += km;
-            }
-        });
-        const mkCard = (label, icon, gym, run) => `<div class="bg-slate-700/50 p-3 rounded-xl border border-slate-600 flex flex-col justify-between h-24"><div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1"><i data-lucide="${icon}" class="w-3 h-3"></i> ${label}</div><div><div class="flex justify-between items-center mb-1"><span class="text-xs text-blue-300 font-bold">Muscu</span><span class="text-lg font-black text-white leading-none">${gym}</span></div><div class="flex justify-between items-center"><span class="text-xs text-amber-300 font-bold">Run</span><span class="text-lg font-black text-white leading-none">${run.toFixed(1)}<span class="text-[10px] text-slate-500 font-normal ml-0.5">km</span></span></div></div></div>`;
-        statsDiv.innerHTML = `${mkCard('Aujourd\'hui', 'calendar', data.day.gym, data.day.run)}${mkCard('Ce Mois', 'calendar-days', data.month.gym, data.month.run)}${mkCard('Cette Année', 'calendar-range', data.year.gym, data.year.run)}${mkCard('Total', 'trophy', data.all.gym, data.all.run)}`;
-        lucide.createIcons();
-    }
+	Structure JSON obligatoire :
+	{
+	  "1": { "type": "muscu", "title": "Titre", "desc": "Info", "exercises": [{ "name": "Exo", "sets": 3, "reps": "12", "rest": "1m" }] },
+	  "2": { "type": "cardio", "title": "Titre", "desc": "Info", "exercises": [{ "name": "Course", "sets": 1, "reps": "45min", "rest": "N/A" }] },
+	  "0": { "type": "rest", "title": "Repos", "desc": "Recup", "exercises": [] }
+	}
+	Clés de "0" (Dimanche) à "6" (Samedi). Type: "muscu", "cardio", "rest".
+	IMPORTANT: Renvoie SEULEMENT le JSON brut, sans texte autour.`;
 
-    function renderVolumeChart() {
-        const container = document.getElementById('volume-chart');
+		navigator.clipboard.writeText(promptText).then(() => {
+			showToast("Prompt copié ! Colle-le dans ChatGPT");
+		}).catch(err => {
+			console.error('Erreur copie', err);
+		});
+	}
+
+    function renderHistory() {
+        const list = document.getElementById('history-list');
         const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        const weeks = [0,0,0,0]; const now = new Date(); const oneWeek = 7 * 24 * 60 * 60 * 1000;
-        history.forEach(session => {
-            if(session.type !== 'muscu') return;
-            const diff = now.getTime() - session.timestamp; const weekIndex = 3 - Math.floor(diff / oneWeek);
-            if(weekIndex >= 0 && weekIndex <= 3) {
-                let sessionVol = 0; session.exercises.forEach(ex => { const w = parseFloat(ex.val1); const rStr = ex.val2.split(',').map(s => parseInt(s)); const totalReps = rStr.reduce((a,b) => a + (isNaN(b)?0:b), 0); if(!isNaN(w)) sessionVol += w * totalReps; });
-                weeks[weekIndex] += sessionVol;
-            }
-        });
-        const maxVol = Math.max(...weeks, 1);
+        if (history.length === 0) { list.innerHTML = '<div class="text-text-muted text-center py-8">Aucune séance.</div>'; return; }
         let html = '';
-        weeks.forEach((vol, i) => {
-            const heightPct = Math.round((vol / maxVol) * 100); const color = i === 3 ? 'bg-blue-500' : 'bg-slate-700';
-            html += `<div class="chart-bar ${color}" style="height: ${heightPct}%"><span class="text-[9px]">${(vol/1000).toFixed(1)}k</span></div>`;
+        history.forEach((session, index) => {
+            const isCardio = session.type === 'cardio'; const color = isCardio ? 'text-amber-400' : 'text-primary';
+            const icon = isCardio ? 'footprints' : 'dumbbell';
+            html += `<div class="bg-card p-4 rounded-xl relative group"><button onclick="deleteSession(${index})" class="absolute top-4 right-4 text-text-muted hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-700/50"><div class="bg-slate-700/50 p-2 rounded-lg"><i data-lucide="${icon}" class="w-5 h-5 ${color}"></i></div><div><div class="flex items-center gap-2"><div class="text-white font-bold text-sm">${session.date}</div><button onclick="editSessionDate(${index})" class="text-slate-500 hover:text-primary"><i data-lucide="pencil" class="w-3 h-3"></i></button></div><div class="text-[10px] text-text-muted uppercase font-bold tracking-wider">${session.title.split(':')[1] || session.title}</div></div></div><ul class="text-sm space-y-2">`;
+            session.exercises.forEach(ex => { let disp = isCardio ? `<span class="text-amber-300 font-bold">${ex.val1}km</span>` : `<span class="bg-slate-700 px-2 rounded text-xs border border-slate-600">${ex.val1}kg x ${ex.val2}</span>`; html += `<li class="flex justify-between items-center text-slate-300"><span class="truncate pr-4">${ex.name}</span>${disp}</li>`; });
+            html += `</ul></div>`;
         });
-        container.innerHTML = html;
-    }
-
-    function getHistoryData(exoName) {
-        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        let last = null, best = null;
-        for (let session of history) {
-            const found = session.exercises.find(e => e.name === exoName || e.name.includes(exoName));
-            if (found) { if(!last) last = found; const val = parseFloat(found.val1.replace(',','.')); if (!isNaN(val) && (!best || val > parseFloat(best.val1.replace(',','.')))) best = found; }
-        }
-        return { last, best };
+        list.innerHTML = html; lucide.createIcons();
     }
 
     function openCalc(weightVal) {
@@ -776,18 +971,10 @@
         let remainder = (parseFloat(weightVal.replace(',','.')) - 20) / 2;
         const div = document.getElementById('calc-result'); div.innerHTML = '';
         if (remainder <= 0) { div.innerHTML = '<span class="text-slate-400 text-sm">Juste la barre (20kg)</span>'; return; }
-        [20, 15, 10, 5, 2.5, 1.25].forEach(p => {
-            while (remainder >= p) { div.innerHTML += `<div class="plate plate-${p.toString().replace('.','-')}">${p}</div>`; remainder -= p; remainder = Math.round(remainder * 100) / 100; }
-        });
+        [20, 15, 10, 5, 2.5, 1.25].forEach(p => { while (remainder >= p) { div.innerHTML += `<div class="plate plate-${p.toString().replace('.','-')}">${p}</div>`; remainder -= p; remainder = Math.round(remainder * 100) / 100; } });
     }
     function closeCalc() { document.getElementById('calc-modal').style.display = 'none'; }
-
-    function showToast(message, isError = false) {
-        const toast = document.getElementById("toast"); document.getElementById("toast-msg").innerText = message;
-        toast.className = isError ? "error show" : "show"; if(appSettings.vibe && navigator.vibrate) navigator.vibrate(50);
-        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-
+    function showToast(message, isError = false) { const toast = document.getElementById("toast"); document.getElementById("toast-msg").innerText = message; toast.className = isError ? "error show" : "show"; if(appSettings.vibe && navigator.vibrate) navigator.vibrate(50); setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000); }
     function fillInputs(index, val1, val2) { document.getElementById(`val1_${index}`).value = val1; document.getElementById(`val2_${index}`).value = val2; showToast("Recopié !"); }
     function parseRestToSeconds(restStr) { if(!restStr) return 60; const match = restStr.match(/\d+/); return match ? parseInt(match[0]) * 60 : 90; }
     
@@ -805,24 +992,315 @@
         updateTimer(); activeTimerInterval = setInterval(updateTimer, 1000);
     }
 
-    function renderHistory() {
-        const list = document.getElementById('history-list');
-        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        if (history.length === 0) { list.innerHTML = '<div class="text-slate-500 text-center py-8">Aucune séance.</div>'; return; }
-        let html = '';
-        history.forEach((session, index) => {
-            const isCardio = session.type === 'cardio'; const color = isCardio ? 'text-amber-400' : 'text-blue-400';
-            html += `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group"><button onclick="deleteSession(${index})" class="absolute top-4 right-4 text-slate-600 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-700/50"><div class="bg-slate-700/50 p-2 rounded-lg"><i data-lucide="${isCardio ? 'footprints' : 'dumbbell'}" class="w-5 h-5 ${color}"></i></div><div><div class="flex items-center gap-2"><div class="text-white font-bold text-sm">${session.date}</div><button onclick="editSessionDate(${index})" class="text-slate-500 hover:text-blue-400"><i data-lucide="pencil" class="w-3 h-3"></i></button></div><div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${session.title.split(':')[1] || session.title}</div></div></div><ul class="text-sm space-y-2">`;
-            session.exercises.forEach(ex => { let disp = isCardio ? `<span class="text-amber-300 font-bold">${ex.val1}km</span>` : `<span class="bg-slate-700 px-2 rounded text-xs border border-slate-600">${ex.val1}kg x ${ex.val2}</span>`; html += `<li class="flex justify-between items-center text-slate-300"><span class="truncate pr-4">${ex.name}</span>${disp}</li>`; });
-            html += `</ul></div>`;
+
+	// --- LOGIQUE ÉDITEUR DE PROGRAMME ---
+
+    // Initialisation du menu déroulant de l'éditeur
+    const daysLabels = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const editSelector = document.getElementById('edit-day-selector');
+    daysLabels.forEach((day, index) => {
+        let option = document.createElement('option');
+        option.value = index;
+        option.text = day;
+        editSelector.add(option);
+    });
+
+    // Variable tampon pour l'édition en cours
+    let editingDayIndex = 0;
+
+    function loadDayEditor(dayIndex) {
+        editingDayIndex = parseInt(dayIndex);
+        const dayData = activeProgram[dayIndex];
+        const container = document.getElementById('editor-content');
+        const isCardio = dayData.type === 'cardio';
+        
+        let exercisesHtml = '';
+        dayData.exercises.forEach((ex, i) => {
+            let inputsHtml = '';
+
+            if (isCardio) {
+                // --- MODE CARDIO : Juste Nom + Objectif ---
+                inputsHtml = `
+                <div class="grid grid-cols-1 gap-2 mb-2">
+                    <input type="text" class="input-dark text-sm font-bold" value="${ex.name}" placeholder="Nom (ex: Course)" id="ex-name-${i}">
+                </div>
+                <div>
+                    <input type="text" class="input-dark text-xs text-center border-amber-900/50 text-amber-100" value="${ex.reps}" placeholder="Objectif (ex: 10km ou 45min)" id="ex-reps-${i}">
+                    <input type="hidden" value="1" id="ex-sets-${i}">
+                    <input type="hidden" value="N/A" id="ex-rest-${i}">
+                </div>`;
+            } else {
+                // --- MODE MUSCU : Nom + Séries + Reps + Repos ---
+                inputsHtml = `
+                <div class="grid grid-cols-1 gap-2 mb-2">
+                    <input type="text" class="input-dark text-sm font-bold" value="${ex.name}" placeholder="Nom de l'exercice" id="ex-name-${i}">
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="number" class="input-dark text-xs text-center" value="${ex.sets}" placeholder="Séries" id="ex-sets-${i}">
+                    <input type="text" class="input-dark text-xs text-center" value="${ex.reps}" placeholder="Reps" id="ex-reps-${i}">
+                    <input type="text" class="input-dark text-xs text-center" value="${ex.rest}" placeholder="Repos" id="ex-rest-${i}">
+                </div>`;
+            }
+
+            exercisesHtml += `
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 relative group mb-2">
+                <button onclick="removeExercise(${i})" class="absolute top-2 right-2 text-slate-500 hover:text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+                ${inputsHtml}
+            </div>`;
         });
-        list.innerHTML = html; lucide.createIcons();
+
+        const html = `
+            <div class="card">
+                <label class="text-[10px] text-text-muted uppercase font-bold mb-1">Type de séance</label>
+                <select id="edit-type" class="input-dark mb-3" onchange="updateDayTypeStyle(this.value); syncCurrentDayForm(); loadDayEditor(${editingDayIndex});">
+                    <option value="muscu" ${dayData.type === 'muscu' ? 'selected' : ''}>Musculation</option>
+                    <option value="cardio" ${dayData.type === 'cardio' ? 'selected' : ''}>Cardio / Running</option>
+                    <option value="rest" ${dayData.type === 'rest' ? 'selected' : ''}>Repos</option>
+                </select>
+
+                <label class="text-[10px] text-text-muted uppercase font-bold mb-1">Titre du jour</label>
+                <input type="text" id="edit-title" class="input-dark mb-3" value="${dayData.title}">
+
+                <label class="text-[10px] text-text-muted uppercase font-bold mb-1">Description / Focus</label>
+                <input type="text" id="edit-desc" class="input-dark" value="${dayData.desc}">
+            </div>
+
+            <div id="exercises-list-container" class="${dayData.type === 'rest' ? 'hidden' : ''}">
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <label class="text-[10px] text-text-muted uppercase font-bold">
+                        ${isCardio ? 'Liste des activités' : 'Exercices'}
+                    </label>
+                    <button onclick="addExercise()" class="text-xs text-primary font-bold flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Ajouter</button>
+                </div>
+                <div id="exercises-list">
+                    ${exercisesHtml}
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        lucide.createIcons();
     }
 
-    function deleteSession(index) { if(confirm("Supprimer ?")) { let h = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'); h.splice(index, 1); localStorage.setItem('gym_tracker_data_v2', JSON.stringify(h)); renderHistory(); renderStats(); renderVolumeChart(); } }
+    function updateDayTypeStyle(type) {
+        const listContainer = document.getElementById('exercises-list-container');
+        if(type === 'rest') listContainer.classList.add('hidden');
+        else listContainer.classList.remove('hidden');
+    }
+
+    // Sauvegarde temporaire des champs dans l'objet en mémoire avant ajout/suppression
+    function syncCurrentDayForm() {
+        const dayData = activeProgram[editingDayIndex];
+        dayData.type = document.getElementById('edit-type').value;
+        dayData.title = document.getElementById('edit-title').value;
+        dayData.desc = document.getElementById('edit-desc').value;
+        
+        // Récupération des exercices
+        const newExercises = [];
+        const exContainer = document.getElementById('exercises-list');
+        // On compte combien d'exercices sont affichés
+        const count = exContainer.children.length;
+        
+        for(let i=0; i<count; i++) {
+            // Attention: les IDs peuvent ne pas être séquentiels si on supprime, 
+            // mais ici on reconstruit tout à chaque fois donc on peut scanner le DOM ou l'objet.
+            // Méthode simple : on relit les inputs présents
+            const nameInput = document.getElementById(`ex-name-${i}`);
+            if(nameInput) {
+                 newExercises.push({
+                    name: nameInput.value,
+                    sets: parseInt(document.getElementById(`ex-sets-${i}`).value) || 0,
+                    reps: document.getElementById(`ex-reps-${i}`).value,
+                    rest: document.getElementById(`ex-rest-${i}`).value
+                });
+            }
+        }
+        dayData.exercises = newExercises;
+    }
+
+    function addExercise() {
+        syncCurrentDayForm();
+        activeProgram[editingDayIndex].exercises.push({ name: '', sets: 3, reps: '10', rest: '1m30' });
+        loadDayEditor(editingDayIndex);
+    }
+
+    function removeExercise(index) {
+        syncCurrentDayForm();
+        activeProgram[editingDayIndex].exercises.splice(index, 1);
+        loadDayEditor(editingDayIndex);
+    }
+
+    function saveCustomProgram() {
+        syncCurrentDayForm(); // Sauvegarder l'état actuel
+        localStorage.setItem('gym_tracker_program', JSON.stringify(activeProgram));
+        showToast("Programme sauvegardé !");
+        
+        // Recharger la vue principale si on est sur le jour modifié
+        if (currentDayIndex === editingDayIndex) {
+            loadDailyView(currentDayIndex);
+        }
+        // Mettre à jour le sélecteur principal
+        updateMainSelector();
+    }
+
+    function resetProgram() {
+        if(confirm("Réinitialiser le programme par défaut ?")) {
+            activeProgram = JSON.parse(JSON.stringify(defaultProgram));
+            localStorage.removeItem('gym_tracker_program');
+            loadDayEditor(editingDayIndex);
+            updateMainSelector();
+            loadDailyView(currentDayIndex);
+            showToast("Programme rétabli.");
+        }
+    }
+
+    function updateMainSelector() {
+        const mainSelector = document.getElementById('day-selector');
+        mainSelector.innerHTML = '';
+        daysLabels.forEach((day, index) => {
+            let option = document.createElement('option');
+            option.value = index;
+            option.text = activeProgram[index].title;
+            if(index === currentDayIndex) option.selected = true;
+            mainSelector.add(option);
+        });
+    }
+
+	
+
+
+    function deleteSession(index) { if(confirm("Supprimer ?")) { let h = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'); h.splice(index, 1); localStorage.setItem('gym_tracker_data_v2', JSON.stringify(h)); renderHistory(); renderStats(); } }
     function exportData() { const data = { history: JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'), water: JSON.parse(localStorage.getItem('gym_tracker_water') || '[]'), settings: appSettings }; const blob = new Blob([JSON.stringify(data)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gym_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
     function importData(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { try { const data = JSON.parse(e.target.result); if(data.history) localStorage.setItem('gym_tracker_data_v2', JSON.stringify(data.history)); if(data.water) localStorage.setItem('gym_tracker_water', JSON.stringify(data.water)); if(data.settings) { localStorage.setItem('gym_tracker_settings', JSON.stringify(data.settings)); loadSettings(); } showToast("Succès !"); setTimeout(() => location.reload(), 1000); } catch(err) { showToast("Erreur", true); } }; reader.readAsText(file); }
     function clearData() { if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); } }
+	
+	
+	// --- 9. GESTION AVANCÉE DES PROGRAMMES (IMPORT/EXPORT/BIBLIOTHÈQUE) ---
+
+    // A. Export Fichier JSON
+    function exportProgramJSON() {
+        const dataStr = JSON.stringify(activeProgram, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `programme_gymrun_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast("Programme exporté !");
+    }
+
+    // B. Import Fichier JSON
+    function importProgramJSON(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                // Vérification sommaire de la structure
+                if (json[0] && json[0].exercises) {
+                    activeProgram = json;
+                    localStorage.setItem('gym_tracker_program', JSON.stringify(activeProgram));
+                    
+                    // Rafraîchir l'interface
+                    loadDailyView(currentDayIndex);
+                    loadDayEditor(editingDayIndex || 0); // Recharger l'éditeur si ouvert
+                    updateMainSelector(); // Mettre à jour le titre des jours dans la home
+                    
+                    showToast("Programme importé avec succès !");
+                } else {
+                    showToast("Format invalide", true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Erreur de lecture du fichier", true);
+            }
+        };
+        reader.readAsText(file);
+        // Reset input pour permettre de réimporter le même fichier
+        input.value = '';
+    }
+
+    // C. Bibliothèque Locale (Sauvegarde interne)
+    function getLibrary() {
+        return JSON.parse(localStorage.getItem('gym_tracker_program_library') || '{}');
+    }
+
+    function saveProgramToLibrary() {
+        const name = document.getElementById('prog-save-name').value.trim();
+        if (!name) { showToast("Nom requis !", true); return; }
+        
+        const lib = getLibrary();
+        lib[name] = JSON.parse(JSON.stringify(activeProgram)); // Copie propre
+        localStorage.setItem('gym_tracker_program_library', JSON.stringify(lib));
+        
+        updateLibrarySelector();
+        document.getElementById('prog-save-name').value = '';
+        showToast(`"${name}" sauvegardé !`);
+    }
+
+    function loadProgramFromLibrary() {
+        const name = document.getElementById('library-selector').value;
+        if (!name) return;
+        
+        if(confirm(`Remplacer la semaine actuelle par "${name}" ?`)) {
+            const lib = getLibrary();
+            if (lib[name]) {
+                activeProgram = lib[name];
+                localStorage.setItem('gym_tracker_program', JSON.stringify(activeProgram));
+                
+                // Refresh UI
+                loadDailyView(currentDayIndex);
+                if(document.getElementById('view-editor').classList.contains('active')) {
+                   loadDayEditor(editingDayIndex || 0);
+                }
+                updateMainSelector();
+                showToast("Programme chargé !");
+            }
+        }
+    }
+
+    function deleteProgramFromLibrary() {
+        const name = document.getElementById('library-selector').value;
+        if (!name) return;
+        
+        if(confirm(`Supprimer définitivement "${name}" de la bibliothèque ?`)) {
+            const lib = getLibrary();
+            delete lib[name];
+            localStorage.setItem('gym_tracker_program_library', JSON.stringify(lib));
+            updateLibrarySelector();
+            showToast("Supprimé.");
+        }
+    }
+
+    function updateLibrarySelector() {
+        const selector = document.getElementById('library-selector');
+        const lib = getLibrary();
+        
+        // Garder l'option par défaut
+        selector.innerHTML = '<option value="">-- Choisir un programme --</option>';
+        
+        Object.keys(lib).forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.text = name;
+            selector.add(opt);
+        });
+    }
+
+    // Appel initial pour remplir la liste au démarrage
+    updateLibrarySelector();
+	
+	
+	// --- 8. TIME TRACKER (Compteur de temps) ---
+    setInterval(() => {
+        // Récupère le temps actuel ou 0, ajoute 1 seconde et sauvegarde
+        let total = parseInt(localStorage.getItem('gym_tracker_time_spent') || '0');
+        localStorage.setItem('gym_tracker_time_spent', total + 1);
+    }, 1000);
 </script>
 </body>
 </html>
