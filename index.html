@@ -91,6 +91,15 @@
                 </select>
             </div>
         </div>
+
+	<div class="mb-4 px-1">
+    <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1 block ml-1">Date de la séance</label>
+    <input type="date" id="session-date" class="input-dark text-center text-slate-300 font-mono">
+    <script>
+        // Met la date d'aujourd'hui par défaut
+        document.getElementById('session-date').valueAsDate = new Date();
+    </script>
+</div>
         <div id="app-content"></div>
     </div>
 
@@ -132,14 +141,6 @@
         </div>
     </div>
 
-    <nav class="navbar">
-        <div class="nav-item active" onclick="switchTab('tracker', this)"><i data-lucide="dumbbell"></i><span>Séance</span></div>
-        <div class="nav-item" onclick="switchTab('history', this)"><i data-lucide="calendar-days"></i><span>Journal</span></div>
-        <div class="nav-item" onclick="switchTab('stats', this)"><i data-lucide="bar-chart-2"></i><span>Stats</span></div>
-        <div class="nav-item" onclick="switchTab('nutrition', this)"><i data-lucide="utensils"></i><span>Nutri</span></div>
-        <div class="nav-item" onclick="switchTab('settings', this)"><i data-lucide="settings"></i><span>Outils</span></div>
-    </nav>
-
     <div id="calc-modal" onclick="closeCalc()">
         <div class="bg-slate-900 p-6 rounded-2xl w-80 text-center border border-slate-700 shadow-2xl transform scale-100" onclick="event.stopPropagation()">
             <h3 class="text-xl font-bold text-white mb-2">Charger la Barre</h3>
@@ -150,6 +151,15 @@
         </div>
     </div>
 
+<footer style ="padding-top: 40px;">
+<nav class="navbar">
+        <div class="nav-item active" onclick="switchTab('tracker', this)"><i data-lucide="dumbbell"></i><span>Séance</span></div>
+        <div class="nav-item" onclick="switchTab('history', this)"><i data-lucide="calendar-days"></i><span>Journal</span></div>
+        <div class="nav-item" onclick="switchTab('stats', this)"><i data-lucide="bar-chart-2"></i><span>Stats</span></div>
+        <div class="nav-item" onclick="switchTab('nutrition', this)"><i data-lucide="utensils"></i><span>Nutri</span></div>
+        <div class="nav-item" onclick="switchTab('settings', this)"><i data-lucide="settings"></i><span>Outils</span></div>
+    </nav>
+</footer>
     <div id="toast"><span id="toast-msg">Message</span></div>
     <audio id="timer-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
@@ -213,7 +223,7 @@
         element.classList.add('active');
         
         if(tabId === 'history') renderHistory();
-        if(tabId === 'stats') { renderWeeklyStats(); renderVolumeChart(); }
+        if(tabId === 'stats') { renderStats(); renderVolumeChart(); }
         if(tabId === 'nutrition') { renderNutrition(); }
         
         const titles = { 'tracker': 'Gym & Run', 'history': 'Journal', 'stats': 'Statistiques', 'nutrition': 'Coach Nutri', 'settings': 'Outils' };
@@ -555,71 +565,222 @@
 
     // --- 7. SAUVEGARDE & SYSTEME ---
     function saveWorkout(dayIndex) {
-        const form = document.getElementById('workout-form');
-        const dayPlan = program[dayIndex];
-        const date = new Date().toLocaleDateString('fr-FR');
-        let sessionData = { date: date, timestamp: new Date().getTime(), title: dayPlan.title, type: dayPlan.type, notes: form.notes ? form.notes.value : "", exercises: [] };
-        dayPlan.exercises.forEach((exo, index) => {
-            const val1 = form[`val1_${index}`].value;
-            const val2 = form[`val2_${index}`].value;
-            if(val1 || val2) sessionData.exercises.push({ name: exo.name, val1: val1 || '-', val2: val2 || '-' });
-        });
-        if (sessionData.exercises.length === 0) { showToast("Vide !", true); return; }
-        let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        history.unshift(sessionData);
-        localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
-        showToast("Validé ! 🔥"); form.reset(); loadDailyView(dayIndex);
+    const form = document.getElementById('workout-form');
+    const dayPlan = program[dayIndex];
+    
+    // MODIFICATION ICI : Récupération de la date du sélecteur
+    const dateInput = document.getElementById('session-date').value; // Format YYYY-MM-DD
+    let dateStr;
+    let timestamp;
+
+    if (dateInput) {
+        const [y, m, d] = dateInput.split('-'); // Découpe YYYY-MM-DD
+        dateStr = `${d}/${m}/${y}`; // Recompose en DD/MM/YYYY pour l'affichage
+        timestamp = new Date(y, m - 1, d).getTime(); // Pour le tri chrono
+    } else {
+        // Fallback si vide
+        const now = new Date();
+        dateStr = now.toLocaleDateString('fr-FR');
+        timestamp = now.getTime();
+    }
+    
+    let sessionData = {
+        date: dateStr,
+        timestamp: timestamp, 
+        title: dayPlan.title,
+        type: dayPlan.type,
+        notes: form.notes ? form.notes.value : "",
+        exercises: []
+    };
+
+    dayPlan.exercises.forEach((exo, index) => {
+        const val1 = form[`val1_${index}`].value;
+        const val2 = form[`val2_${index}`].value;
+        if(val1 || val2) {
+            sessionData.exercises.push({
+                name: exo.name,
+                val1: val1 || '-',
+                val2: val2 || '-'
+            });
+        }
+    });
+
+    if (sessionData.exercises.length === 0) {
+        showToast("Remplis au moins une case !", true);
+        return;
     }
 
-    function renderWeeklyStats() {
+    let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+    history.unshift(sessionData); 
+    
+    // Optionnel : Retrier l'historique par date si on ajoute une vieille séance
+    history.sort((a, b) => b.timestamp - a.timestamp);
+
+    localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
+
+    showToast("Séance enregistrée ! 🔥");
+    form.reset();
+    document.getElementById('session-date').valueAsDate = new Date(); // Reset date à aujourd'hui
+    loadDailyView(dayIndex);
+}
+
+    // --- NOUVELLE FONCTION STATISTIQUES GLOBALES ---
+    function renderStats() {
         const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
         const statsDiv = document.getElementById('weekly-stats');
-        const now = new Date(); const diff = now.getDate() - now.getDay() + (now.getDay() == 0 ? -6 : 1);
-        const monday = new Date(now.setDate(diff)).setHours(0,0,0,0);
-        let gymCount = 0, runKm = 0;
+        
+        const now = new Date();
+        const todayStr = now.toLocaleDateString('fr-FR'); // Format JJ/MM/AAAA
+        const curMonth = now.getMonth(); // 0-11
+        const curYear = now.getFullYear();
+
+        // Initialisation des compteurs
+        const data = {
+            day: { gym: 0, run: 0 },
+            month: { gym: 0, run: 0 },
+            year: { gym: 0, run: 0 },
+            all: { gym: 0, run: 0 }
+        };
+
         history.forEach(session => {
-            const parts = session.date.split('/'); const time = new Date(parts[2], parts[1]-1, parts[0]).getTime();
-            if(time >= monday) {
-                if(session.type === 'muscu') gymCount++;
-                else if (session.type === 'cardio') session.exercises.forEach(ex => { const km = parseFloat(ex.val1.replace(',','.')); if(!isNaN(km)) runKm += km; });
+            const [d, m, y] = session.date.split('/').map(Number);
+            
+            // Vérification des dates
+            const isToday = session.date === todayStr;
+            const isMonth = (m - 1) === curMonth && y === curYear;
+            const isYear = y === curYear;
+
+            if (session.type === 'muscu') {
+                data.all.gym++;
+                if (isYear) data.year.gym++;
+                if (isMonth) data.month.gym++;
+                if (isToday) data.day.gym++;
+            } 
+            else if (session.type === 'cardio') {
+                let km = 0;
+                session.exercises.forEach(ex => {
+                    // On gère les virgules et points pour les distances
+                    const val = parseFloat(ex.val1.replace(',', '.'));
+                    if (!isNaN(val)) km += val;
+                });
+                
+                data.all.run += km;
+                if (isYear) data.year.run += km;
+                if (isMonth) data.month.run += km;
+                if (isToday) data.day.run += km;
             }
         });
+
+        // Générateur de petite carte stats
+        const mkCard = (label, icon, gym, run) => `
+            <div class="bg-slate-700/50 p-3 rounded-xl border border-slate-600 flex flex-col justify-between h-24">
+                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
+                    <i data-lucide="${icon}" class="w-3 h-3"></i> ${label}
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-blue-300 font-bold">Muscu</span>
+                        <span class="text-lg font-black text-white leading-none">${gym}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-amber-300 font-bold">Run</span>
+                        <span class="text-lg font-black text-white leading-none">${run.toFixed(1)}<span class="text-[10px] text-slate-500 font-normal ml-0.5">km</span></span>
+                    </div>
+                </div>
+            </div>`;
+
+        // Injection du HTML (4 cartes)
         statsDiv.innerHTML = `
-            <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600 text-center"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Muscu (Hebdo)</div><div class="text-3xl font-black text-white">${gymCount}</div></div>
-            <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600 text-center"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Running (Hebdo)</div><div class="text-3xl font-black text-amber-400">${runKm.toFixed(1)} <span class="text-sm">km</span></div></div>`;
+            ${mkCard('Aujourd\'hui', 'calendar', data.day.gym, data.day.run)}
+            ${mkCard('Ce Mois', 'calendar-days', data.month.gym, data.month.run)}
+            ${mkCard('Cette Année', 'calendar-range', data.year.gym, data.year.run)}
+            ${mkCard('Total', 'trophy', data.all.gym, data.all.run)}
+        `;
+        
+        lucide.createIcons();
     }
 
     function renderHistory() {
-        const list = document.getElementById('history-list');
-        const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
-        if (history.length === 0) { list.innerHTML = '<div class="text-slate-500 text-center py-8">Aucune séance.</div>'; return; }
-        let html = '';
-        history.forEach((session, index) => {
-            const isCardio = session.type === 'cardio';
-            const color = isCardio ? 'text-amber-400' : 'text-blue-400';
-            html += `
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
-                    <button onclick="deleteSession(${index})" class="absolute top-4 right-4 text-slate-600 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    <div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-700/50">
-                        <div class="bg-slate-700/50 p-2 rounded-lg"><i data-lucide="${isCardio ? 'footprints' : 'dumbbell'}" class="w-5 h-5 ${color}"></i></div>
-                        <div><div class="text-white font-bold text-sm">${session.date}</div><div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${session.title.split(':')[1] || session.title}</div></div>
-                    </div>
-                    <ul class="text-sm space-y-2">`;
-            session.exercises.forEach(ex => {
-                let disp = isCardio ? `<span class="text-amber-300 font-bold">${ex.val1}km</span>` : `<span class="bg-slate-700 px-2 rounded text-xs border border-slate-600">${ex.val1}kg x ${ex.val2}</span>`;
-                html += `<li class="flex justify-between items-center text-slate-300"><span class="truncate pr-4">${ex.name}</span>${disp}</li>`;
-            });
-            html += `</ul></div>`;
-        });
-        list.innerHTML = html;
-        lucide.createIcons();
+    const list = document.getElementById('history-list');
+    const history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+    
+    if (history.length === 0) {
+        list.innerHTML = '<div class="text-slate-500 text-center py-8 border border-dashed border-slate-700 rounded-xl">Aucune séance. Go ! 🚀</div>';
+        return;
     }
+
+    let html = '';
+    history.forEach((session, index) => {
+        const isCardio = session.type === 'cardio';
+        const noteHtml = session.notes ? `<div class="text-xs text-slate-400 italic mt-3 bg-slate-900/50 p-2 rounded border-l-2 border-slate-600">"${session.notes}"</div>` : '';
+        const typeColor = isCardio ? 'text-amber-400' : 'text-blue-400';
+        
+        html += `
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
+                <button onclick="deleteSession(${index})" class="absolute top-4 right-4 text-slate-600 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                
+                <div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-700/50">
+                    <div class="bg-slate-700/50 p-2 rounded-lg"><i data-lucide="${isCardio ? 'footprints' : 'dumbbell'}" class="w-5 h-5 ${typeColor}"></i></div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <div class="text-white font-bold text-sm">${session.date}</div>
+                            <button onclick="editSessionDate(${index})" class="text-slate-500 hover:text-blue-400 transition-colors">
+                                <i data-lucide="pencil" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${session.title.split(':')[1] || session.title}</div>
+                    </div>
+                </div>
+                <ul class="text-sm space-y-2">`;
+        
+        session.exercises.forEach(ex => {
+            let display = isCardio 
+                ? `<span class="text-amber-300 font-bold">${ex.val1}km <span class="text-slate-500 font-normal">en</span> ${ex.val2}</span>`
+                : `<span class="font-mono text-white bg-slate-700 px-2 py-0.5 rounded text-xs border border-slate-600">${ex.val1}kg x ${ex.val2}</span>`;
+            html += `<li class="flex justify-between items-center text-slate-300"><span class="truncate pr-4">${ex.name}</span>${display}</li>`;
+        });
+        html += `</ul>${noteHtml}</div>`;
+    });
+    list.innerHTML = html;
+    lucide.createIcons();
+}
+
+// AJOUT : Nouvelle fonction pour modifier la date
+function editSessionDate(index) {
+    let history = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]');
+    const current = history[index].date; // Format DD/MM/YYYY
+    
+    // On demande la nouvelle date
+    const newDateStr = prompt("Modifier la date (Format JJ/MM/AAAA) :", current);
+    
+    if (newDateStr && newDateStr !== current) {
+        // Validation basique du format (optionnelle mais conseillée)
+        const parts = newDateStr.split('/');
+        if(parts.length === 3) {
+            history[index].date = newDateStr;
+            // Mise à jour du timestamp pour que les stats restent justes
+            const newTime = new Date(parts[2], parts[1]-1, parts[0]).getTime();
+            if(!isNaN(newTime)) {
+                history[index].timestamp = newTime;
+                // Re-trier l'historique
+                history.sort((a, b) => b.timestamp - a.timestamp);
+            }
+            
+            localStorage.setItem('gym_tracker_data_v2', JSON.stringify(history));
+            renderHistory();
+            renderStats(); // Met à jour les stats hebdo
+            showToast("Date modifiée !");
+        } else {
+            showToast("Format invalide (JJ/MM/AAAA)", true);
+        }
+    }
+}
 
     function deleteSession(index) {
         if(confirm("Supprimer ?")) {
             let h = JSON.parse(localStorage.getItem('gym_tracker_data_v2') || '[]'); h.splice(index, 1);
             localStorage.setItem('gym_tracker_data_v2', JSON.stringify(h));
-            renderHistory(); renderWeeklyStats(); renderVolumeChart();
+            renderHistory(); renderStats(); renderVolumeChart();
         }
     }
 
