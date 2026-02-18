@@ -1,0 +1,79 @@
+[
+  {
+    "day": 1,
+    "title": "Lundi (Muscu)",
+    "type": "muscu",
+    "details": [
+      { "label": "Matin", "text": "Avoine + Œufs (Glucides lents)" },
+      { "label": "Midi", "text": "Riz/Pâtes + Viande (Énergie)" },
+      { "label": "Post-Séance", "text": "Whey ou Protéines rapides" },
+      { "label": "Dîner", "text": "Féculents modérés + Légumes" }
+    ]
+  },
+  {
+    "day": 2,
+    "title": "Mardi (Run)",
+    "type": "run",
+    "details": [
+      { "label": "Hydratation", "text": "Bois +500ml d'eau minimum" },
+      { "label": "Midi", "text": "Glucides complexes (Quinoa/Lentilles)" },
+      { "label": "Avant course", "text": "Banane ou poignée d'amandes" },
+      { "label": "Dîner", "text": "Léger (Soupe + Poisson)" }
+    ]
+  },
+  {
+    "day": 3,
+    "title": "Mercredi (Muscu)",
+    "type": "muscu",
+    "details": [
+      { "label": "Matin", "text": "Avoine + Œufs (Glucides lents)" },
+      { "label": "Midi", "text": "Riz/Pâtes + Viande (Énergie)" },
+      { "label": "Post-Séance", "text": "Whey ou Protéines rapides" },
+      { "label": "Dîner", "text": "Féculents modérés + Légumes" }
+    ]
+  },
+  {
+    "day": 4,
+    "title": "Jeudi (Run)",
+    "type": "run",
+    "details": [
+      { "label": "Hydratation", "text": "Bois +500ml d'eau minimum" },
+      { "label": "Midi", "text": "Glucides complexes (Quinoa/Lentilles)" },
+      { "label": "Avant course", "text": "Banane ou poignée d'amandes" },
+      { "label": "Dîner", "text": "Léger (Soupe + Poisson)" }
+    ]
+  },
+  {
+    "day": 5,
+    "title": "Vendredi (Muscu)",
+    "type": "muscu",
+    "details": [
+      { "label": "Matin", "text": "Avoine + Œufs (Glucides lents)" },
+      { "label": "Midi", "text": "Riz/Pâtes + Viande (Énergie)" },
+      { "label": "Post-Séance", "text": "Whey ou Protéines rapides" },
+      { "label": "Dîner", "text": "Féculents modérés + Légumes" }
+    ]
+  },
+  {
+    "day": 6,
+    "title": "Samedi (Run)",
+    "type": "run",
+    "details": [
+      { "label": "Hydratation", "text": "Bois +500ml d'eau minimum" },
+      { "label": "Midi", "text": "Glucides complexes (Quinoa/Lentilles)" },
+      { "label": "Avant course", "text": "Banane ou poignée d'amandes" },
+      { "label": "Dîner", "text": "Léger (Soupe + Poisson)" }
+    ]
+  },
+  {
+    "day": 0,
+    "title": "Dimanche (Repos)",
+    "type": "rest",
+    "details": [
+      { "label": "Objectif", "text": "Récupération (Low Carb)" },
+      { "label": "Assiette", "text": "50% Légumes, 25% Prot, 25% Gras" },
+      { "label": "Focus", "text": "Avocat, Saumon, Noix, Huile d'olive" },
+      { "label": "Soir", "text": "Zéro féculents si possible" }
+    ]
+  }
+]
