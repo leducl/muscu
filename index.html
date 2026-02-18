@@ -780,26 +780,103 @@
     // --- 6. RENDER NUTRITION ---
     async function renderNutrition() {
         const list = document.getElementById('nutrition-list');
-        try {
-            const response = await fetch('nutrition.json');
-            if (!response.ok) throw new Error("Erreur");
-            const nutriPlan = await response.json();
-            let html = ''; const today = new Date().getDay(); const orderedDays = [1, 2, 3, 4, 5, 6, 0];
-            
-            orderedDays.forEach(dayIndex => {
-                const item = nutriPlan.find(p => p.day === dayIndex); if(!item) return;
-                const isToday = item.day === today;
-                // La carte active utilise bg-slate-800 avec une bordure primary
-                const activeClass = isToday ? 'border-l-4 border-l-[var(--primary)] bg-slate-800 shadow-lg' : 'opacity-70 grayscale hover:grayscale-0 transition-all';
-                const icon = item.type === 'muscu' ? 'dumbbell' : (item.type === 'run' ? 'footprints' : 'coffee');
-                let tag = item.type === 'muscu' ? '<span class="meal-tag tag-muscu">Force</span>' : (item.type === 'run' ? '<span class="meal-tag tag-run">Cardio</span>' : '<span class="meal-tag tag-rest">Repos</span>');
-                let detailsHtml = '<ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">';
-                item.details.forEach(detail => detailsHtml += `<li><strong>${detail.label}:</strong> ${detail.text}</li>`);
-                html += `<div class="card ${activeClass} mb-3" id="day-${item.day}"><div class="flex justify-between items-center mb-1"><div class="flex items-center gap-2"><i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i><h3 class="font-bold text-white text-sm">${item.title}</h3></div>${tag}</div>${detailsHtml}</ul></div>`;
-            });
-            list.innerHTML = html; lucide.createIcons();
-            if(document.querySelector('.border-l-[var(--primary)]')) setTimeout(() => document.querySelector('.border-l-[var(--primary)]').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-        } catch (error) { list.innerHTML = `<div class="text-red-400 text-center p-4 border border-red-900 rounded-lg bg-red-900/10 text-xs">Fichier nutrition.json introuvable.</div>`; }
+        const nutriPlan =
+           [
+		  {
+			"day": 1,
+			"title": "Lundi (Muscu)",
+			"type": "muscu",
+			"details": [
+			  { "label": "Matin", "text": "Avoine + Œufs (Glucides lents)" },
+			  { "label": "Midi", "text": "Riz/Pâtes + Viande (Énergie)" },
+			  { "label": "Post-Séance", "text": "Whey ou Protéines rapides" },
+			  { "label": "Dîner", "text": "Féculents modérés + Légumes" }
+			]
+		  },
+		  {
+			"day": 2,
+			"title": "Mardi (Run)",
+			"type": "run",
+			"details": [
+			  { "label": "Hydratation", "text": "Bois +500ml d'eau minimum" },
+			  { "label": "Midi", "text": "Glucides complexes (Quinoa/Lentilles)" },
+			  { "label": "Avant course", "text": "Banane ou poignée d'amandes" },
+			  { "label": "Dîner", "text": "Léger (Soupe + Poisson)" }
+			]
+		  },
+		  {
+			"day": 3,
+			"title": "Mercredi (Muscu)",
+			"type": "muscu",
+			"details": [
+			  { "label": "Matin", "text": "Avoine + Œufs (Glucides lents)" },
+			  { "label": "Midi", "text": "Riz/Pâtes + Viande (Énergie)" },
+			  { "label": "Post-Séance", "text": "Whey ou Protéines rapides" },
+			  { "label": "Dîner", "text": "Féculents modérés + Légumes" }
+			]
+		  },
+		  {
+			"day": 4,
+			"title": "Jeudi (Run)",
+			"type": "run",
+			"details": [
+			  { "label": "Hydratation", "text": "Bois +500ml d'eau minimum" },
+			  { "label": "Midi", "text": "Glucides complexes (Quinoa/Lentilles)" },
+			  { "label": "Avant course", "text": "Banane ou poignée d'amandes" },
+			  { "label": "Dîner", "text": "Léger (Soupe + Poisson)" }
+			]
+		  },
+		  {
+			"day": 5,
+			"title": "Vendredi (Muscu)",
+			"type": "muscu",
+			"details": [
+			  { "label": "Matin", "text": "Avoine + Œufs (Glucides lents)" },
+			  { "label": "Midi", "text": "Riz/Pâtes + Viande (Énergie)" },
+			  { "label": "Post-Séance", "text": "Whey ou Protéines rapides" },
+			  { "label": "Dîner", "text": "Féculents modérés + Légumes" }
+			]
+		  },
+		  {
+			"day": 6,
+			"title": "Samedi (Run)",
+			"type": "run",
+			"details": [
+			  { "label": "Hydratation", "text": "Bois +500ml d'eau minimum" },
+			  { "label": "Midi", "text": "Glucides complexes (Quinoa/Lentilles)" },
+			  { "label": "Avant course", "text": "Banane ou poignée d'amandes" },
+			  { "label": "Dîner", "text": "Léger (Soupe + Poisson)" }
+			]
+		  },
+		  {
+			"day": 0,
+			"title": "Dimanche (Repos)",
+			"type": "rest",
+			"details": [
+			  { "label": "Objectif", "text": "Récupération (Low Carb)" },
+			  { "label": "Assiette", "text": "50% Légumes, 25% Prot, 25% Gras" },
+			  { "label": "Focus", "text": "Avocat, Saumon, Noix, Huile d'olive" },
+			  { "label": "Soir", "text": "Zéro féculents si possible" }
+			]
+		  }
+		];
+			
+			
+        let html = ''; const today = new Date().getDay(); const orderedDays = [1, 2, 3, 4, 5, 6, 0];
+        
+        orderedDays.forEach(dayIndex => {
+            const item = nutriPlan.find(p => p.day === dayIndex); if(!item) return;
+            const isToday = item.day === today;
+            // La carte active utilise bg-slate-800 avec une bordure primary
+            const activeClass = isToday ? 'border-l-4 border-l-[var(--primary)] bg-slate-800 shadow-lg' : 'opacity-70 grayscale hover:grayscale-0 transition-all';
+            const icon = item.type === 'muscu' ? 'dumbbell' : (item.type === 'run' ? 'footprints' : 'coffee');
+            let tag = item.type === 'muscu' ? '<span class="meal-tag tag-muscu">Force</span>' : (item.type === 'run' ? '<span class="meal-tag tag-run">Cardio</span>' : '<span class="meal-tag tag-rest">Repos</span>');
+            let detailsHtml = '<ul class="text-xs text-slate-300 space-y-1 list-disc pl-4 mt-2">';
+            item.details.forEach(detail => detailsHtml += `<li><strong>${detail.label}:</strong> ${detail.text}</li>`);
+            html += `<div class="card ${activeClass} mb-3" id="day-${item.day}"><div class="flex justify-between items-center mb-1"><div class="flex items-center gap-2"><i data-lucide="${icon}" class="w-4 h-4 text-slate-400"></i><h3 class="font-bold text-white text-sm">${item.title}</h3></div>${tag}</div>${detailsHtml}</ul></div>`;
+        });
+        list.innerHTML = html; lucide.createIcons();
+        if(document.querySelector('.border-l-[var(--primary)]')) setTimeout(() => document.querySelector('.border-l-[var(--primary)]').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
     }
 
     // --- 7. HELPERS & CHARTS ---
