@@ -70,13 +70,17 @@
             color: var(--text-main); 
             padding: 0.8rem; 
             border-radius: 12px; 
+            
+            /* --- CORRECTION DÉBORDEMENT --- */
             width: 100%; 
+            max-width: 100%; /* Sécurité absolue : ne peut pas dépasser le parent */
+            display: block;  /* Assure que l'élément se comporte comme un bloc */
+            box-sizing: border-box !important; /* Force le calcul de largeur incluant le padding */
+            margin: 0; /* Retire les marges par défaut potentielles */
+            
             font-weight: 600; 
             transition: all 0.2s;
-            
-            /* --- CORRECTIFS AJOUTÉS --- */
-            box-sizing: border-box; /* Inclut le padding dans les 100% de largeur */
-            -webkit-appearance: none; /* Retire le style natif iOS */
+            -webkit-appearance: none; /* Retire le style iOS natif */
             appearance: none;
         }
 		
